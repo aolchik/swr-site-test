@@ -3,4 +3,4 @@
   NPM_FLAGS="--prefix=/"
 [build]
   publish = "public"
-  command = "npx pnpm i --store=node_modules/.pnpm-store && npx pnpm run build"
+  command = "npx pnpm i --store=node_modules/.pnpm-store &&  || { cat /opt/buildhome/.npm/_logs/* ; sleep 30 ; false; }"
