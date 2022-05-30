@@ -1,6 +1,5 @@
 [build.environment]
   NODE_VERSION = "16"
-  NPM_FLAGS="--prefix=/"
 [build]
   publish = ".next"
   command = "npx pnpm i --store=node_modules/.pnpm-store && npx pnpm run build || { cat /opt/buildhome/.npm/_logs/* ; sleep 30 ; false; }"
