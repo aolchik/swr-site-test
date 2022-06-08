@@ -1,0 +1,17 @@
+---
+title: Admin
+searchable: false
+---
+
+import Head from 'next/head'
+import dynamic from 'next/dynamic'
+import config from '../cms/config'
+
+export const CMS = dynamic(() => { window.CMS_MANUAL_INIT = true; return import('netlify-cms').then((cms) => { cms.init({ config }) }) }, { ssr: false, loading: () => <h1>Loading</h1> })
+
+<Head>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</Head>
+
+<CMS />
+

@@ -3,11 +3,11 @@ const withNextra = require("nextra")({
   themeConfig: "./theme.config.js",
   unstable_flexsearch: true,
   unstable_staticImage: true,
-});
+})
 
 module.exports = withNextra({
   i18n: {
-    locales: ["en-US", "zh-CN", "es-ES", "ja", "ko", "ru"],
+    locales: [ "en-US" ],
     defaultLocale: "en-US",
   },
   redirects: () => {
@@ -52,6 +52,7 @@ module.exports = withNextra({
         destination: "/examples/basic",
         statusCode: 302,
       },
-    ];
+    ]
   },
-});
+})
+
