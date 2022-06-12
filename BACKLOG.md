@@ -5,34 +5,30 @@
 
   Add netlify - cms
 
-    Support mdx files
+    remove content folder
   
-      Load netlify through a mdx page
+    Test in production
 
-        enable netlify to edit the pages folder
-          https://dev.to/siddharthroy/build-a-free-blog-with-nextjs-and-netlify-cms-125h
+    CSS problems when switching to Netlify
 
-        pending custom widget registration from mdx processing
-          https://github.com/netlify/netlify-cms/issues/3580
-
-        remove content folder
-
-        document architectural decision
-          netlify initialization should be dynamic to avoid window not defined error
-            https://github.com/netlify/netlify-cms/issues/3580
-  
-        CSS problems when switching to Netlify
-  
-    Test & document
-
-      In order to test if everything is working we need to use a beta feature from Netlify CMS to spin up a proxy server for our backend in order to test locally so we don't have to test directly with a live repo. You should run this command in a new tab/window in your cmd so you also have the next dev running.
-      
-      npx netlify-cms-proxy-server
-  
-    Manage a content page using netlify (in pages)
+    netlify-cms: Stop trying to load config.yml
 
   Add eslint
+  
+  Support external authentication
 
-  Keep en-US and pt-BR
+  Organize open source project
 
-  Solve warnings / log errors
+    Rename project name
+  
+    Keep en-US and pt-BR
+  
+    Clean unnecessary content
+  
+    Solve warnings / log errors
+
+  Customize layout
+
+  Customize content
+
+  Test deploy
