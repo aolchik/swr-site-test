@@ -1,6 +1,8 @@
-# [SWR website](https://swr.vercel.app)
+# [SWR website test](https://swr.vercel.app)
 
-The official website for [SWR](https://github.com/vercel/swr).
+This repo is based on the official website for [SWR](https://github.com/vercel/swr).
+
+The ideia behind this test is to use the stylish nextra-doc-theme and the possibility to add content using mdx files with the added feature of a headless CMS content management like netlify-cms.
 
 The project uses [pnpm](https://pnpm.io), [Nextra](https://nextra.vercel.app) and deploys via [Vercel](https://vercel.com). To develop it locally, clone this repository and run the following command to start the local dev server:
 
@@ -9,17 +11,18 @@ pnpm install
 pnpm dev
 ```
 
-And visit `localhost:3000` to preview your changes.
+In order to test if everything is working we need to use a beta feature from Netlify CMS to spin up a proxy server for our backend in order to test locally so we don't have to test directly with a live repo. You should run this command in a new tab/window in your cmd so you also have the next dev running.
+      
+```bash
+npx netlify-cms-proxy-server
+```
+
+Visit `127.0.0.1:3000` to preview your changes.
 
 ## Contributing
 
-When making a change, or creating a new page, please make sure to edit all language files. You can simply copy the content of the edited English document (or the edited paragraph) and apply it to other language files. And then, volunteers are welcome to help with any untranslated sections.
+Pending...
 
 ## Contributors
 
-- https://github.com/vercel/swr-site/graphs/contributors
-- Simplified Chinese translation done by Fang Lu ([@huzhengen](https://github.com/huzhengen))
-- Spanish translation done by Markoz Peña ([@markozxuu](https://twitter.com/markozxuu))
-- Japanese translation done by uttk ([@uttk](https://github.com/uttk)), Tomohiro SHIOYA ([@shioyang](https://github.com/shioyang))
-- Korean translation done by SeulGi Choi ([@cs09g](https://github.com/cs09g))
-- Russian translation done by Valentin Politov ([@valentinpolitov](https://github.com/valentinpolitov))
+Pending...
