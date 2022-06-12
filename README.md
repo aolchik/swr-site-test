@@ -26,3 +26,7 @@ Pending...
 ## Contributors
 
 Pending...
+
+## References
+
+- Build a free blog with Next.js and Netlify CMS - https://dev.to/siddharthroy/build-a-free-blog-with-nextjs-and-netlify-cms-125h
