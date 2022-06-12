@@ -20,7 +20,7 @@
     "@types/react": "^18.0.9",
     "focus-visible": "^5.1.0",
     "graphql": "^16.5.0",
-    "immutable": "^4.1.0",
+    "immutable": "~3.8.1",
     "intersection-observer": "^0.10.0",
     "lodash": "^4.17.21",
     "markdown-to-jsx": "^6.11.4",

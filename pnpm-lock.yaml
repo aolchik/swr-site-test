@@ -9,7 +9,7 @@ specifiers:
   autoprefixer: ^10.4.2
   focus-visible: ^5.1.0
   graphql: ^16.5.0
-  immutable: ^4.1.0
+  immutable: ~3.8.1
   intersection-observer: ^0.10.0
   lodash: ^4.17.21
   markdown-to-jsx: ^6.11.4
@@ -36,19 +36,19 @@ dependencies:
   '@types/react': 18.0.12
   focus-visible: 5.2.0
   graphql: 16.5.0
-  immutable: 4.1.0
+  immutable: 3.8.2
   intersection-observer: 0.10.0
   lodash: 4.17.21
   markdown-to-jsx: 6.11.4_react@17.0.2
   netlify-cms: 2.10.192_kw5ytflhtucen2i2ezmfyc4mpy
-  netlify-cms-lib-util: 2.15.1_gccecyyfjtztmfwk4qbbquob2i
-  netlify-cms-widget-mdx: 0.5.0_ina7mhfbxqabqedkfjtpr5tnzu
+  netlify-cms-lib-util: 2.15.1_y7hmz3pgikxz4dg77iijw34oam
+  netlify-cms-widget-mdx: 0.5.0_sbori73t7ahaornxk3t2ms3plq
   next: 12.1.6_noz7egsnsfdcs6s6px6pthieke
   nextra: 2.0.0-alpha.56_react@17.0.2
   nextra-theme-docs: 2.0.0-alpha.56_zhtyyhxvjc4vmyivr6fwl32yja
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
-  react-immutable-proptypes: 2.2.0_immutable@4.1.0
+  react-immutable-proptypes: 2.2.0_immutable@3.8.2
   react-intersection-observer: 8.34.0_react@17.0.2
   webpack: 5.73.0
 
@@ -2700,10 +2700,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /immutable/4.1.0:
-    resolution: {integrity: sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==}
-    dev: false
-
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -4377,19 +4373,6 @@ packages:
       uuid: 3.4.0
     dev: false
 
-  /netlify-cms-lib-util/2.15.1_gccecyyfjtztmfwk4qbbquob2i:
-    resolution: {integrity: sha512-Kg9aK40VjNRoD/BQ8MrYqj5K1ac62cjWrH3x+NqFEIyBQkpGtWcKzm6vrAcNe61LirW64YccsVAf+ll+ZDMJGA==}
-    peerDependencies:
-      immutable: ^3.7.6
-      lodash: ^4.17.11
-    dependencies:
-      immutable: 4.1.0
-      js-sha256: 0.9.0
-      localforage: 1.10.0
-      lodash: 4.17.21
-      semaphore: 1.1.0
-    dev: false
-
   /netlify-cms-lib-util/2.15.1_y7hmz3pgikxz4dg77iijw34oam:
     resolution: {integrity: sha512-Kg9aK40VjNRoD/BQ8MrYqj5K1ac62cjWrH3x+NqFEIyBQkpGtWcKzm6vrAcNe61LirW64YccsVAf+ll+ZDMJGA==}
     peerDependencies:
@@ -4424,7 +4407,7 @@ packages:
     peerDependencies:
       netlify-cms-lib-util: ^2.12.3
     dependencies:
-      netlify-cms-lib-util: 2.15.1_gccecyyfjtztmfwk4qbbquob2i
+      netlify-cms-lib-util: 2.15.1_y7hmz3pgikxz4dg77iijw34oam
     dev: false
 
   /netlify-cms-media-library-uploadcare/0.5.10:
@@ -4665,7 +4648,7 @@ packages:
       react-immutable-proptypes: 2.2.0_immutable@3.8.2
     dev: false
 
-  /netlify-cms-widget-markdown/2.15.1_imgdebmah4i4mudw3zswdxkexq:
+  /netlify-cms-widget-markdown/2.15.1_jpto4xo5ozlimqxpcsxjopqwbe:
     resolution: {integrity: sha512-hw5neYVKPFJVNiyymQ1TUzChoQmY23BV6K2VxJQvb+WEABhFIv0kJY42q3QKfqN53Wh4sPGv+yFxwaeIVPvQBQ==}
     peerDependencies:
       '@emotion/core': ^10.0.35
@@ -4681,7 +4664,7 @@ packages:
       '@emotion/core': 10.3.1_react@17.0.2
       '@emotion/styled': 10.3.0_gfrer23gq2rp2t523t6qbxrx6m
       dompurify: 2.3.8
-      immutable: 4.1.0
+      immutable: 3.8.2
       is-hotkey: 0.2.0
       lodash: 4.17.21
       mdast-util-definitions: 1.2.5
@@ -4690,17 +4673,17 @@ packages:
       prop-types: 15.8.1
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
-      react-immutable-proptypes: 2.2.0_immutable@4.1.0
+      react-immutable-proptypes: 2.2.0_immutable@3.8.2
       rehype-parse: 6.0.2
       rehype-remark: 8.1.1
       rehype-stringify: 7.0.0
       remark-parse: 6.0.3
       remark-rehype: 4.0.1
       remark-stringify: 6.0.4
-      slate: 0.47.9_immutable@4.1.0
+      slate: 0.47.9_immutable@3.8.2
       slate-base64-serializer: 0.2.115_slate@0.47.9
-      slate-plain-serializer: 0.7.13_ielb4sfzq4oxkj5l4biomd442a
-      slate-react: 0.22.10_esqxz6all5e232troz7evsusme
+      slate-plain-serializer: 0.7.13_xpfunylcfixkkdo57xd3hfvb6m
+      slate-react: 0.22.10_mmes7kau2zqabviqjs2vo5gq5e
       slate-soft-break: 0.9.0_zare6adgkggb4lvmbvmdll77s4
       unified: 7.1.0
       unist-builder: 1.0.4
@@ -4753,7 +4736,7 @@ packages:
       - supports-color
     dev: false
 
-  /netlify-cms-widget-mdx/0.5.0_ina7mhfbxqabqedkfjtpr5tnzu:
+  /netlify-cms-widget-mdx/0.5.0_sbori73t7ahaornxk3t2ms3plq:
     resolution: {integrity: sha512-BDauy418WdiYY1/6q//oVz5Dkfego7QhFdLq8B+G1jgGtNLOVknWVChKRxGaDmtTHskg6IIG35oNQNz4mVO6lQ==}
     peerDependencies:
       netlify-cms: ^2.9
@@ -4762,7 +4745,7 @@ packages:
       mdx-scoped-runtime: 0.8.0_3dj5wppwohj5ocihzt4m54mr2a
       netlify-cms: 2.10.192_kw5ytflhtucen2i2ezmfyc4mpy
       netlify-cms-ui-default: 2.15.5_wv7vzqahof5lk2brgg3u4ikbde
-      netlify-cms-widget-markdown: 2.15.1_imgdebmah4i4mudw3zswdxkexq
+      netlify-cms-widget-markdown: 2.15.1_jpto4xo5ozlimqxpcsxjopqwbe
       prop-types: 15.8.1
       react: 17.0.2
     transitivePeerDependencies:
@@ -5581,15 +5564,6 @@ packages:
       invariant: 2.2.4
     dev: false
 
-  /react-immutable-proptypes/2.2.0_immutable@4.1.0:
-    resolution: {integrity: sha512-Vf4gBsePlwdGvSZoLSBfd4HAP93HDauMY4fDjXhreg/vg6F3Fj/MXDNyTbltPC/xZKmZc+cjLu3598DdYK6sgQ==}
-    peerDependencies:
-      immutable: '>=3.6.2'
-    dependencies:
-      immutable: 4.1.0
-      invariant: 2.2.4
-    dev: false
-
   /react-input-autosize/3.0.0_react@16.14.0:
     resolution: {integrity: sha512-nL9uS7jEs/zu8sqwFE5MAPx6pPkNAriACQ2rGLlqmKr2sPGtN7TXTyDdQt4lbNXVx7Uzadb40x8qotIuru6Rhg==}
     peerDependencies:
@@ -6401,7 +6375,7 @@ packages:
       slate: '>=0.32.0 <0.50.0'
     dependencies:
       isomorphic-base64: 1.0.2
-      slate: 0.47.9_immutable@4.1.0
+      slate: 0.47.9_immutable@3.8.2
     dev: false
 
   /slate-dev-environment/0.2.5:
@@ -6417,16 +6391,6 @@ packages:
       slate-dev-environment: 0.2.5
     dev: false
 
-  /slate-plain-serializer/0.7.13_ielb4sfzq4oxkj5l4biomd442a:
-    resolution: {integrity: sha512-TtrlaslxQBEMV0LYdf3s7VAbTxRPe1xaW10WNNGAzGA855/0RhkaHjKkQiRjHv5rvbRleVf7Nxr9fH+4uErfxQ==}
-    peerDependencies:
-      immutable: '>=3.8.1'
-      slate: '>=0.46.0 <0.50.0'
-    dependencies:
-      immutable: 4.1.0
-      slate: 0.47.9_immutable@4.1.0
-    dev: false
-
   /slate-plain-serializer/0.7.13_xpfunylcfixkkdo57xd3hfvb6m:
     resolution: {integrity: sha512-TtrlaslxQBEMV0LYdf3s7VAbTxRPe1xaW10WNNGAzGA855/0RhkaHjKkQiRjHv5rvbRleVf7Nxr9fH+4uErfxQ==}
     peerDependencies:
@@ -6435,16 +6399,6 @@ packages:
     dependencies:
       immutable: 3.8.2
       slate: 0.47.9_immutable@3.8.2
-    dev: false
-
-  /slate-prop-types/0.5.44_ielb4sfzq4oxkj5l4biomd442a:
-    resolution: {integrity: sha512-JS0iW7uaciE/W3ADuzeN1HOnSjncQhHPXJ65nZNQzB0DF7mXVmbwQKI6cmCo/xKni7XRJT0JbWSpXFhEdPiBUA==}
-    peerDependencies:
-      immutable: '>=3.8.1'
-      slate: '>=0.32.0 <0.50.0'
-    dependencies:
-      immutable: 4.1.0
-      slate: 0.47.9_immutable@4.1.0
     dev: false
 
   /slate-prop-types/0.5.44_xpfunylcfixkkdo57xd3hfvb6m:
@@ -6477,8 +6431,8 @@ packages:
       slate-react: '>=0.22.0'
     dependencies:
       react: 17.0.2
-      slate: 0.47.9_immutable@4.1.0
-      slate-react: 0.22.10_esqxz6all5e232troz7evsusme
+      slate: 0.47.9_immutable@3.8.2
+      slate-react: 0.22.10_mmes7kau2zqabviqjs2vo5gq5e
     dev: false
 
   /slate-react/0.22.10_da3bpn74ullsbjmqeqqxr76s7m:
@@ -6513,7 +6467,7 @@ packages:
       - supports-color
     dev: false
 
-  /slate-react/0.22.10_esqxz6all5e232troz7evsusme:
+  /slate-react/0.22.10_mmes7kau2zqabviqjs2vo5gq5e:
     resolution: {integrity: sha512-B2Ms1u/REbdd8yKkOItKgrw/tX8klgz5l5x6PP86+oh/yqmB6EHe0QyrYlQ9fc3WBlJUVTOL+nyAP1KmlKj2/w==}
     peerDependencies:
       immutable: '>=3.8.1 || >4.0.0-rc'
@@ -6523,21 +6477,21 @@ packages:
     dependencies:
       debug: 3.2.7
       get-window: 1.1.2
-      immutable: 4.1.0
+      immutable: 3.8.2
       is-window: 1.0.2
       lodash: 4.17.21
       memoize-one: 4.0.3
       prop-types: 15.8.1
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
-      react-immutable-proptypes: 2.2.0_immutable@4.1.0
+      react-immutable-proptypes: 2.2.0_immutable@3.8.2
       selection-is-backward: 1.0.0
-      slate: 0.47.9_immutable@4.1.0
+      slate: 0.47.9_immutable@3.8.2
       slate-base64-serializer: 0.2.115_slate@0.47.9
       slate-dev-environment: 0.2.5
       slate-hotkeys: 0.2.11
-      slate-plain-serializer: 0.7.13_ielb4sfzq4oxkj5l4biomd442a
-      slate-prop-types: 0.5.44_ielb4sfzq4oxkj5l4biomd442a
+      slate-plain-serializer: 0.7.13_xpfunylcfixkkdo57xd3hfvb6m
+      slate-prop-types: 0.5.44_xpfunylcfixkkdo57xd3hfvb6m
       slate-react-placeholder: 0.2.9_qcvgaedsawcd3bai4if6v3l3im
       tiny-invariant: 1.2.0
       tiny-warning: 0.0.3
@@ -6551,8 +6505,8 @@ packages:
       slate: '>=0.42.2'
       slate-react: '>=0.19.3'
     dependencies:
-      slate: 0.47.9_immutable@4.1.0
-      slate-react: 0.22.10_esqxz6all5e232troz7evsusme
+      slate: 0.47.9_immutable@3.8.2
+      slate-react: 0.22.10_mmes7kau2zqabviqjs2vo5gq5e
     dev: false
 
   /slate/0.47.9_immutable@3.8.2:
@@ -6564,24 +6518,6 @@ packages:
       direction: 0.1.5
       esrever: 0.2.0
       immutable: 3.8.2
-      is-plain-object: 2.0.4
-      lodash: 4.17.21
-      tiny-invariant: 1.2.0
-      tiny-warning: 0.0.3
-      type-of: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /slate/0.47.9_immutable@4.1.0:
-    resolution: {integrity: sha512-EK4O6b7lGt+g5H9PGw9O5KCM4RrOvOgE9mPi3rzQ0zDRlgAb2ga4TdpS6XNQbrsJWsc8I1fjaSsUeCqCUhhi9A==}
-    peerDependencies:
-      immutable: '>=3.8.1 || >4.0.0-rc'
-    dependencies:
-      debug: 3.2.7
-      direction: 0.1.5
-      esrever: 0.2.0
-      immutable: 4.1.0
       is-plain-object: 2.0.4
       lodash: 4.17.21
       tiny-invariant: 1.2.0
