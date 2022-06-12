@@ -28,13 +28,14 @@ module.exports = {
       label: "Blog",
       label_singular: "Blog",
       editor: { preview: false },
-      folder: "content/blog",
+      folder: "pages/blog",
       create: true,
       slug: "{{slug}}",
       extension: "mdx",
       format: "frontmatter",
       fields: [
         { label: "Title", name: "title", widget: "string", required: true },
+        { label: "Image", name: "image", widget: "image"},
         { label: "Description", name: "description", widget: "string" },
         { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL" },
         { label: "Body", name: "body", widget: "mdx" }

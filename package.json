@@ -14,9 +14,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@babel/core": "^7.18.2",
-    "@emotion/core": "^11.0.0",
-    "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1",
+    "@emotion/core": "^10.0.35",
+    "@emotion/styled": "^10.0.27",
     "@reach/skip-nav": "^0.16.0",
     "@types/react": "^18.0.9",
     "focus-visible": "^5.1.0",
@@ -27,14 +26,15 @@
     "markdown-to-jsx": "^6.11.4",
     "netlify-cms": "^2.10.192",
     "netlify-cms-lib-util": "^2.15.1",
-    "netlify-cms-widget-mdx": "^0.4.4",
+    "netlify-cms-widget-mdx": "^0.5.0",
     "next": "^12.1.0",
-    "nextra": "^2.0.0-alpha.50",
-    "nextra-theme-docs": "^2.0.0-alpha.53",
+    "nextra": "2.0.0-alpha.56",
+    "nextra-theme-docs": "2.0.0-alpha.56",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-immutable-proptypes": "^2.2.0",
-    "react-intersection-observer": "^8.26.2"
+    "react-intersection-observer": "^8.26.2",
+    "webpack": "^5.73.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.2",

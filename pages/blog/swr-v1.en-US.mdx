@@ -1,12 +1,11 @@
 ---
+title: Announcing SWR 1.0
 image: https://assets.vercel.com/image/upload/v1630059453/swr/v1.png
-description: 'Almost 2 years ago we open sourced SWR, the tiny data-fetching React library that people love. Today we are reaching another milestone: the 1.0 version of SWR.'
+description: "Almost 2 years ago we open sourced SWR, the tiny data-fetching
+  React library that people love. Today we are reaching another milestone: the
+  1.0 version of SWR."
 date: August 27th, 2021
 ---
-
-import Callout from 'nextra-theme-docs/callout'
-import Bleed from 'nextra-theme-docs/bleed'
-
 import Authors, { Author } from 'components/authors'
 
 # Announcing SWR 1.0
@@ -24,9 +23,9 @@ Almost 2 years ago we [open sourced](https://twitter.com/vercel/status/118891100
 
 [Performance](/docs/advanced/performance) is one of the most important features of SWR. In 1.0, we made the library significantly smaller **without removing any existing features**:
 
-- 41% smaller core (24% smaller when gzipped, **3.9 kB**)
-- 52% smaller package install size
-- Improved tree-shaking
+* 41% smaller core (24% smaller when gzipped, **3.9 kB**)
+* 52% smaller package install size
+* Improved tree-shaking
 
 There are many reasons to make the library lightweight: your application will have a smaller bundle, a leaner runtime, and a smaller `node_modules` directory.
 
@@ -85,7 +84,7 @@ By default, SWR uses a single global cache to store all the data. In 1.0, you ar
 </SWRConfig>
 ```
 
-You can use this new feature to do many powerful things. We have a couple of examples here: [_Mutate Multiple Keys with RegEx_](/docs/advanced/cache#mutate-multiple-keys-from-regex), [_LocalStorage Based Persistent Cache_](/docs/advanced/cache#localstorage-based-persistent-cache), [_Reset Cache Between Tests_](/docs/advanced/cache#reset-cache-between-test-cases).
+You can use this new feature to do many powerful things. We have a couple of examples here: *[Mutate Multiple Keys with RegEx](/docs/advanced/cache#mutate-multiple-keys-from-regex)*, *[LocalStorage Based Persistent Cache](/docs/advanced/cache#localstorage-based-persistent-cache)*, *[Reset Cache Between Tests](/docs/advanced/cache#reset-cache-between-test-cases)*.
 
 This new cache provider API is also more compatible with concurrent rendering of React 18. If you are adding a cache provider, make sure to use the global `mutate` function returned from `useSWRConfig()`.
 
@@ -118,7 +117,7 @@ SWR Middleware provide a new way for you to build and reuse abstractions on top 
 useSWR(key, fetcher, { use: [...middleware] })
 ```
 
-A lot of new ideas can be implemented with this feature, and we've built some examples: [_Request Logger_](/docs/middleware#request-logger), [_Keep Previous Data When Changing the Key_](/docs/middleware#keep-previous-result), and [_Serialize Object Keys_](/docs/middleware#serialize-object-keys).
+A lot of new ideas can be implemented with this feature, and we've built some examples: *[Request Logger](/docs/middleware#request-logger)*, *[Keep Previous Data When Changing the Key](/docs/middleware#keep-previous-result)*, and *[Serialize Object Keys](/docs/middleware#serialize-object-keys)*.
 
 Check the [Middleware API](/docs/middleware) for more details.
 
@@ -130,12 +129,12 @@ Since 0.x, we've made hundreds of small improvements and bugfixes. SWR now has 1
 
 Thanks to our [contributors](https://github.com/vercel/swr-site/graphs/contributors) and Nextra’s [i18n feature](https://nextra.vercel.app/features/i18n), we now offer SWR documentation in six different languages:
 
-- [English](https://swr.vercel.app)
-- [Spanish](https://swr.vercel.app/es-ES)
-- [Simplified Chinese](https://swr.vercel.app/zh-CN)
-- [Japanese](https://swr.vercel.app/ja)
-- [Korean](https://swr.vercel.app/ko)
-- [Russian](https://swr.vercel.app/ru)
+* [English](https://swr.vercel.app)
+* [Spanish](https://swr.vercel.app/es-ES)
+* [Simplified Chinese](https://swr.vercel.app/zh-CN)
+* [Japanese](https://swr.vercel.app/ja)
+* [Korean](https://swr.vercel.app/ko)
+* [Russian](https://swr.vercel.app/ru)
 
 ## Migration Guide
 
@@ -193,7 +192,7 @@ useSWR(key, (url) => fetch(url).then(res => res.json()))
 
 ### Recommend to Use the Hook-Returned `mutate`
 
-This is **not** a breaking change, but we will now _recommend_ to always use the `mutate` returned from the `useSWRConfig` hook:
+This is **not** a breaking change, but we will now *recommend* to always use the `mutate` returned from the `useSWRConfig` hook:
 
 ```diff
 - import { mutate } from 'swr'
@@ -229,10 +228,10 @@ If you are using TypeScript, the following type names have been changed for cons
 
 If you are using a beta version of SWR, or using any undocumented APIs, please be aware of the following changes:
 
-- `import { cache } from 'swr'` is removed; use the new [`useSWRConfig` API](#useswrconfig) instead.
-- `import { createCache } from 'swr'` is removed; use the new [Cache Provider API](/docs/advanced/cache) instead.
-- `revalidateWhenStale` is renamed to `revalidateIfStale`.
-- `middlewares` is renamed to `use`.
+* `import { cache } from 'swr'` is removed; use the new [`useSWRConfig` API](#useswrconfig) instead.
+* `import { createCache } from 'swr'` is removed; use the new [Cache Provider API](/docs/advanced/cache) instead.
+* `revalidateWhenStale` is renamed to `revalidateIfStale`.
+* `middlewares` is renamed to `use`.
 
 ### Changelog
 
