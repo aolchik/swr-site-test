@@ -1,20 +1,17 @@
 
 
 ## TODO
-
-
+  
   Add netlify - cms
 
-    remove content folder
-  
     Test in production
+
+    Support docs and examples editing 
 
     CSS problems when switching to Netlify
 
     netlify-cms: Stop trying to load config.yml
 
-  Add eslint
-  
   Support external authentication
 
   Organize open source project
@@ -27,8 +24,6 @@
   
     Solve warnings / log errors
 
-  Customize layout
+  Customize theme and new home
 
-  Customize content
-
-  Test deploy
+    Content at home not centered on small screens
