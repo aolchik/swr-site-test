@@ -1,12 +1,13 @@
-import { getPagesUnderRoute } from "nextra/context";
-import Link from "next/link";
+import { getPagesUnderRoute } from 'nextra/context'
+import Link from 'next/link'
+import React from 'react'
 
 export default function BlogIndex({ more = "Read more" }) {
   return getPagesUnderRoute("/blog").map((page) => {
     // Alias `<a>` to avoid it being replaced by MDX components.
     const A = "a";
     return (
-      <div className="">
+      <div className="" key={page.name}>
         <h3>
           <Link href={page.route}>
             <A style={{ color: "inherit", textDecoration: "none" }}>
