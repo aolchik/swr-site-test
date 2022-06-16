@@ -24,6 +24,8 @@
   
     Solve warnings / log errors
 
+    Solve warnings pnpm
+
   Customize theme and new home
 
     Content at home not centered on small screens
