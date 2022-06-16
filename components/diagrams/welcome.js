@@ -1,4 +1,5 @@
-import { draw } from "./drawer";
+import { draw } from './drawer'
+import React from 'react'
 
 const WELCOME_BACK = {
   "en-US":

@@ -1,20 +1,20 @@
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router'
 
-export const draw = (paths = {}, name = "") => {
-  const { locale, defaultLocale } = useRouter();
+export const draw = (paths = {}, name = '') => {
+  const { locale, defaultLocale } = useRouter()
 
-  if (!paths.hasOwnProperty(defaultLocale)) {
+  if (!Object.prototype.hasOwnProperty.call(paths,defaultLocale)) {
     throw new Error(
       `Please provide '${defaultLocale}' locale inside '${paths}'.`
-    );
+    )
   }
 
   if (
-    typeof paths[locale] === "string" &&
-    typeof paths[defaultLocale] === "string"
+    typeof paths[locale] === 'string' &&
+    typeof paths[defaultLocale] === 'string'
   ) {
-    return paths[locale] || paths[defaultLocale];
+    return paths[locale] || paths[defaultLocale]
   }
 
-  return paths[locale]?.[name] || paths[defaultLocale][name];
-};
+  return paths[locale]?.[name] || paths[defaultLocale][name]
+}

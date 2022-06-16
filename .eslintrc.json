@@ -1,0 +1,58 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "ignorePatterns": [ "*.css", "pages/docs/pagination.en-US.mdx", "pages/docs/data-fetching.en-US.mdx", "pages/docs/advanced/cache.en-US.mdx" ],
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "react"
+  ],
+  "extends": [
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "eslint:recommended",
+    "plugin:jsonc/recommended-with-jsonc",
+    "plugin:react/recommended",
+    "plugin:md/recommended",
+    "plugin:mdx/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+        "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "settings": {
+    "react": {
+        "version": "detect"
+    },
+    // optional, if you want to lint code blocks at the same time
+    "mdx/code-blocks": false,
+    // optional, if you want to disable language mapper, set it to `false`
+    // if you want to override the default language mapper inside, you can provide your own
+    "mdx/language-mapper": {}
+  },
+  "overrides": [
+    {
+      "files": ["*.json", "*.json5", "*.jsonc"],
+      "parser": "jsonc-eslint-parser"
+    },
+    {
+      "files": ["*.md"],
+      "parser": "markdown-eslint-parser"
+    },    
+    {
+      "files": ["*.mdx"],
+      "extends": ["plugin:mdx/overrides"]
+    },
+    {
+      "files": "**/*.{md,mdx}/**",
+      "extends": "plugin:mdx/code-blocks"
+    }
+  ]
+}

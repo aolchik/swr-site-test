@@ -10,11 +10,18 @@ There’re many ways to prefetch the data for SWR. For top level requests, [`rel
 
 Just put it inside your HTML `<head>`. It’s easy, fast and native.
 
-It will prefetch the data when the HTML loads, even before JavaScript starts to download. All your incoming fetch requests with the same URL will reuse the result (including SWR, of course).
+It will prefetch the data when the HTML loads, 
+even before JavaScript starts to download. 
+All your incoming fetch requests with the same URL will 
+reuse the result (including SWR, of course).
 
 ## Programmatically Prefetch
 
-Sometimes, you want to preload a resource conditionally. For example, preloading the data when the user is [hovering](https://github.com/GoogleChromeLabs/quicklink) [a](https://github.com/guess-js/guess) [link](https://instant.page). The most intuitive way is to have a function to refetch and set the cache via the global [mutate](/docs/mutation):
+Sometimes, you want to preload a resource conditionally. 
+For example, preloading the data when the user is 
+[hovering](https://github.com/GoogleChromeLabs/quicklink) [a](https://github.com/guess-js/guess) [link](https://instant.page). 
+The most intuitive way is to have a function to refetch 
+and set the cache via the global [mutate](/docs/mutation):
 
 ```js
 import { mutate } from 'swr'

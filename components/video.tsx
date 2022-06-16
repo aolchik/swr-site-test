@@ -1,12 +1,21 @@
 import { useRef, useCallback, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import 'intersection-observer'
+import React from 'react'
 
-export default ({ src, caption, ratio }) => {
+interface VideoProps {
+  src: string
+  caption: string
+  ratio: number
+}
+
+
+export default function Video ({ src, caption, ratio }: VideoProps) {
   const [inViewRef, inView] = useInView({
     threshold: 1,
   })
-  const videoRef = useRef()
+
+  const videoRef = useRef<HTMLVideoElement | null>()
 
   const setRefs = useCallback(
     (node) => {

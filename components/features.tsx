@@ -1,13 +1,19 @@
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router'
+import React from 'react'
 
-import styles from "./features.module.css";
+import styles from "./features.module.css"
 
-const Feature = ({ text, icon }) => (
+interface FeatureProps {
+  text: string
+  icon: React.ReactNode
+}
+
+const Feature = ({ text, icon }: FeatureProps) => (
   <div className={styles.feature}>
     {icon}
     <h4>{text}</h4>
   </div>
-);
+)
 
 const TITLE_WITH_TRANSLATIONS = {
   "en-US": "React Hooks for Data Fetching",
@@ -55,7 +61,7 @@ const FEATURES_WITH_TRANSLATIONS = {
   },
 };
 
-export default () => {
+export default function Features() {
   const { locale, defaultLocale } = useRouter();
 
   const featureText = (key) =>
@@ -225,5 +231,6 @@ export default () => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
+
