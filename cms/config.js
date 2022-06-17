@@ -4,7 +4,7 @@ module.exports = {
   cms_manual_init: true,
 
   backend: {
-    name: "test-repo", // "git-gateway", 
+    name: "git-gateway", // "test-repo", 
     branch: "netlify_cms", // Branch to update (optional; defaults to master)
     squash_merges: true,
   },
@@ -27,7 +27,7 @@ module.exports = {
       name: "blog",
       label: "Blog",
       label_singular: "Blog",
-      editor: { preview: false },
+      editor: { preview: true },
       folder: "pages/blog",
       create: true,
       slug: "{{slug}}",
@@ -41,5 +41,19 @@ module.exports = {
         { label: "Body", name: "body", widget: "mdx" }
         ],
     },
+    {
+      name: "docs",
+      label: "Docs",
+      label_singular: "Doc",
+      editor: { preview: true },
+      folder: "pages/docs",
+      create: true,
+      slug: "{{slug}}",
+      extension: "mdx",
+      format: "frontmatter",
+      fields: [
+        { label: "Title", name: "title", widget: "string", required: true }
+      ]
+    }
   ],
 };
