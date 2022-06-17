@@ -4,6 +4,9 @@
     "es2021": true,
     "node": true
   },
+  "globals": {
+    "JSX": true
+  },
   "ignorePatterns": [ "*.css", "pages/docs/pagination.en-US.mdx", "pages/docs/data-fetching.en-US.mdx", "pages/docs/advanced/cache.en-US.mdx" ],
   "root": true,
   "parser": "@typescript-eslint/parser",
