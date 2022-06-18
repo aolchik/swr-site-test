@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic'
 import config from '../cms/config'
 import Head from 'next/head'
 import React from 'react'
-import Features from '../components/features'
 
 const CMS = dynamic(() => { 
     window.CMS_MANUAL_INIT = true;
