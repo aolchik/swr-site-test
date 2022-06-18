@@ -6,7 +6,20 @@
 
     Test in production
 
-    Support docs and examples editing 
+    Support full editing 
+      https://www.netlifycms.org/docs/collection-types/
+
+      docs and examples editing
+
+      Preview Change Log
+
+      Manage the language field in collections
+
+      Why drafts are not being saved?
+
+      Support single page editing
+
+      Nested folders
 
     CSS problems when switching to Netlify
 
