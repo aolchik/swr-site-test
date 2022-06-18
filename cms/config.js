@@ -56,6 +56,23 @@ module.exports = {
         { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL" },
         { label: "Body", name: "body", widget: "mdx" }
       ]
+    },
+    {
+      name: "examples",
+      label: "Examples",
+      label_singular: "Example",
+      editor: { preview: true },
+      folder: "pages/examples",
+      create: true,
+      slug: "{{slug}}",
+      extension: "mdx",
+      format: "frontmatter",
+      fields: [
+        { label: "Title", name: "title", widget: "string", required: true },
+        { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL" },
+        { label: "Full", name: "full", widget: "boolean" },
+        { label: "Body", name: "body", widget: "mdx" }
+      ]
     }
   ],
-};
+}
