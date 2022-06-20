@@ -14,7 +14,7 @@ pnpm dev
 In order to test if everything is working we need to use a beta feature from Netlify CMS to spin up a proxy server for our backend in order to test locally so we don't have to test directly with a live repo. You should run this command in a new tab/window in your cmd so you also have the next dev running.
       
 ```bash
-npx netlify-cms-proxy-server
+pnpx netlify-cms-proxy-server
 ```
 
 Visit `127.0.0.1:3000` to preview your changes.
