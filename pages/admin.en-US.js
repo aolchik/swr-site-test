@@ -11,7 +11,7 @@ const CMS = dynamic(() => {
 
       import('@emotion/react').then(() => {
         import('netlify-cms-widget-mdx').then((widget) => {
-          cms.registerWidget('mdx', widget.MdxControl, widget.MdxPreview);
+          cms.registerWidget('mdx', widget.MdxControl, widget.MdxPreview)
         })
       })
     }) 

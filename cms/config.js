@@ -9,6 +9,11 @@ module.exports = {
     squash_merges: true,
   },
 
+  i18n: {
+    structure: "multiple_files",
+    locales: [ "pt-BR", "en-US" ]
+  },
+
   // Local backend is used during development
   local_backend: true,
 
@@ -24,13 +29,14 @@ module.exports = {
   // The Pages collection
   collections: [
     {
+      i18n: true,
       name: "blog",
       label: "Blog",
       label_singular: "Blog",
-      editor: { preview: true },
+      editor: { preview: false },
       folder: "pages/blog",
       create: true,
-      slug: "{{slug}}",
+      slug: "{{slug}}{{locale}}",
       extension: "mdx",
       format: "frontmatter",
       fields: [
@@ -45,7 +51,7 @@ module.exports = {
       name: "docs",
       label: "Docs",
       label_singular: "Doc",
-      editor: { preview: true },
+      editor: { preview: false },
       folder: "pages/docs",
       create: true,
       slug: "{{slug}}",
@@ -61,7 +67,7 @@ module.exports = {
       name: "examples",
       label: "Examples",
       label_singular: "Example",
-      editor: { preview: true },
+      editor: { preview: false },
       folder: "pages/examples",
       create: true,
       slug: "{{slug}}",
