@@ -29,10 +29,25 @@ module.exports = {
   // The Pages collection
   collections: [
     {
+      name: "pages",
+      label: "Pages",
       i18n: true,
+      editor: { preview: false },
+      folder: "pages",
+      create: false,
+      slug: "{{slug}}{{locale}}",
+      extension: "mdx",
+      format: "frontmatter",
+      fields: [
+        { label: "Title", name: "title", widget: "string", required: true, i18n: true },
+        { label: "Body", name: "body", widget: "mdx", i18n: true }
+      ],
+    },
+    {
       name: "blog",
       label: "Blog",
       label_singular: "Blog",
+      i18n: true,
       editor: { preview: false },
       folder: "pages/blog",
       create: true,
@@ -40,11 +55,11 @@ module.exports = {
       extension: "mdx",
       format: "frontmatter",
       fields: [
-        { label: "Title", name: "title", widget: "string", required: true },
-        { label: "Image", name: "image", widget: "image"},
-        { label: "Description", name: "description", widget: "string" },
-        { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL" },
-        { label: "Body", name: "body", widget: "mdx" }
+        { label: "Title", name: "title", widget: "string", required: true, i18n: true },
+        { label: "Image", name: "image", widget: "image", i18n: "duplicate" },
+        { label: "Description", name: "description", widget: "string", i18n: true },
+        { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL", i18n: "duplicate" },
+        { label: "Body", name: "body", widget: "mdx", i18n: true }
         ],
     },
     {
