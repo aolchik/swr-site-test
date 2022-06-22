@@ -4,9 +4,11 @@
   
   Add netlify - cms
 
+    Solve deploy problem
+
     Support full editing 
 
-      Support single page editing
+      *Support single page editing
         https://www.netlifycms.org/docs/collection-types/
 
       Nested folders
@@ -14,6 +16,8 @@
 
       Try preview links
         https://www.netlifycms.org/docs/deploy-preview-links/
+
+      Test search
 
     CSS problems when switching to Netlify
 
@@ -31,6 +35,10 @@
 
     Can I selectively disable preview on some pages?
 
+  Blog: add author to frontmatter
+    widget: list
+      https://www.netlifycms.org/docs/collection-types/
+
   Support external authentication
 
   Organize open source project
@@ -42,6 +50,8 @@
     Clean unnecessary content
   
     Solve warnings / log errors
+
+      Solve missing favicon
 
     Solve warnings pnpm
 
