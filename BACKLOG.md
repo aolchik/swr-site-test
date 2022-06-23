@@ -4,7 +4,9 @@
   
   Add netlify - cms
 
-    Solve deploy problem
+    *Solve deploy problem
+      Local build failing
+      Netlify build failing
 
     Support full editing 
 
