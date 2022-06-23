@@ -4,26 +4,14 @@
   
   Add netlify - cms
 
-    *Solve deploy problem
-      Local build failing
-      Netlify build failing
-
     Support full editing 
 
-      *Support single page editing
-        https://www.netlifycms.org/docs/collection-types/
-
-      Nested folders
-        https://www.netlifycms.org/docs/collection-types/
-
-      Try preview links
+      Spike link preview
         https://www.netlifycms.org/docs/deploy-preview-links/
 
-      Test search
+      Spike search
 
-    CSS problems when switching to Netlify
-
-    netlify-cms: Stop trying to load config.yml
+    CSS problems when switching to Netlify CMS layout
 
   SWR Layout - Improve footer responsiveness
 
@@ -38,6 +26,7 @@
     Can I selectively disable preview on some pages?
 
   Blog: add author to frontmatter
+
     widget: list
       https://www.netlifycms.org/docs/collection-types/
 
@@ -54,6 +43,8 @@
     Solve warnings / log errors
 
       Solve missing favicon
+
+      netlify-cms: Stop trying to load config.yml
 
     Solve warnings pnpm
 
