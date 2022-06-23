@@ -6,14 +6,16 @@
 
     Support full editing 
 
-      Spike link preview
+      Spike Netlify CMS link preview
         https://www.netlifycms.org/docs/deploy-preview-links/
 
-      Spike search
+      Spike nextra search
+
+      Spike Netlify CMS content pagination
 
     CSS problems when switching to Netlify CMS layout
 
-  SWR Layout - Improve footer responsiveness
+    SWR Layout - Improve footer responsiveness
 
   Netlify: Support to custom previews
   
