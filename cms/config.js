@@ -66,22 +66,41 @@ module.exports = {
       name: "docs",
       label: "Docs",
       label_singular: "Doc",
+      i18n: true,
       editor: { preview: false },
       folder: "pages/docs",
       create: true,
-      slug: "{{slug}}",
+      slug: "{{slug}}{{locale}}",
       extension: "mdx",
       format: "frontmatter",
       fields: [
-        { label: "Title", name: "title", widget: "string", required: true },
-        { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL" },
-        { label: "Body", name: "body", widget: "mdx" }
-      ]
+        { label: "Title", name: "title", widget: "string", required: true, i18n: true },
+        { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL", i18n: "duplicate" },
+        { label: "Body", name: "body", widget: "mdx", i18n: true }
+      ],
+    },
+    {
+      name: "docs_advanced",
+      label: "Docs/Advanced",
+      label_singular: "Advanced Doc",
+      i18n: true,
+      editor: { preview: false },
+      folder: "pages/docs/advanced",
+      create: true,
+      slug: "{{slug}}{{locale}}",
+      extension: "mdx",
+      format: "frontmatter",
+      fields: [
+        { label: "Title", name: "title", widget: "string", required: true, i18n: true },
+        { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL", i18n: "duplicate" },
+        { label: "Body", name: "body", widget: "mdx", i18n: true }
+      ],
     },
     {
       name: "examples",
       label: "Examples",
       label_singular: "Example",
+      i18n: true,
       editor: { preview: false },
       folder: "pages/examples",
       create: true,
@@ -89,9 +108,9 @@ module.exports = {
       extension: "mdx",
       format: "frontmatter",
       fields: [
-        { label: "Title", name: "title", widget: "string", required: true },
-        { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL" },
-        { label: "Full", name: "full", widget: "boolean" },
+        { label: "Title", name: "title", widget: "string", required: true, i18n: true },
+        { label: "Publish Date", name: "date", widget: "datetime", date_format: "MMMM Do, YYYY", format: "LLL", i18n: "duplicate" },
+        { label: "Full", name: "full", widget: "boolean", i18n: "duplicate" },
         { label: "Body", name: "body", widget: "mdx" }
       ]
     }
