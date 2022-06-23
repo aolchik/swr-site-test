@@ -4,11 +4,6 @@
     "type": "page",
     "hidden": true
   },
-  "admin": {
-    "title": "Admin",
-    "type": "page",
-    "href": "/admin"
-  },
   "docs": {
     "title": "Docs",
     "type": "page"
