@@ -35,7 +35,8 @@ module.exports = {
       editor: { preview: false },
       folder: "pages",
       create: false,
-      slug: "{{slug}}{{locale}}",
+      slug: "{{slug}}",
+      preview_path: "{{locale}}/{{slug}}",
       extension: "mdx",
       format: "frontmatter",
       fields: [
@@ -51,7 +52,8 @@ module.exports = {
       editor: { preview: false },
       folder: "pages/blog",
       create: true,
-      slug: "{{slug}}{{locale}}",
+      slug: "{{slug}}",
+      preview_path: "{{locale}}/blog/{{slug}}",
       extension: "mdx",
       format: "frontmatter",
       fields: [
@@ -70,7 +72,8 @@ module.exports = {
       editor: { preview: false },
       folder: "pages/docs",
       create: true,
-      slug: "{{slug}}{{locale}}",
+      slug: "{{slug}}",
+      preview_path: "{{locale}}/docs/{{slug}}",
       extension: "mdx",
       format: "frontmatter",
       fields: [
@@ -87,7 +90,8 @@ module.exports = {
       editor: { preview: false },
       folder: "pages/docs/advanced",
       create: true,
-      slug: "{{slug}}{{locale}}",
+      slug: "{{slug}}",
+      preview_path: "{{locale}}/docs/advanced/{{slug}}",
       extension: "mdx",
       format: "frontmatter",
       fields: [
@@ -105,6 +109,7 @@ module.exports = {
       folder: "pages/examples",
       create: true,
       slug: "{{slug}}",
+      preview_path: "{{locale}}/examples/{{slug}}",
       extension: "mdx",
       format: "frontmatter",
       fields: [
