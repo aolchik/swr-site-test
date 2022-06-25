@@ -6,14 +6,20 @@
 
     Support full editing 
 
-      *Spike Netlify CMS link preview
-        https://www.netlifycms.org/docs/deploy-preview-links/
+      *Search is not indexing some pages
 
-        Preview is not directing to the right locale
+        To reindex deleting cache and pnpm build was required
+          is cache delete required?
 
-      *Search is not indexing new text
+        blog index page is not being indexed: why?
 
-      Spike Netlify CMS content pagination
+        in production, new deploys reindex the content
+
+        roll back changed content
+
+      *Spike Netlify CMS content pagination
+
+        Clean unnecessary posts
 
       Netlify: Support to custom previews
       
