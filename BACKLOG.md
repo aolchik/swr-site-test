@@ -6,31 +6,34 @@
 
     Support full editing 
 
-      Spike Netlify CMS link preview
+      *Spike Netlify CMS link preview
         https://www.netlifycms.org/docs/deploy-preview-links/
 
-      Spike nextra search
+        Preview is not directing to the right locale
+
+      *Search is not indexing new text
 
       Spike Netlify CMS content pagination
+
+      Netlify: Support to custom previews
+      
+        https://zslabs.com/articles/mdx-previews-in-netlify-cms
+    
+        https://answers.netlify.com/t/graphql-and-custom-previews/11955
+    
+        Does it make sense to enable Change Log editting?
+    
+        Can I selectively disable preview on some pages?
+    
+      Blog: add author to frontmatter
+    
+        widget: list
+          https://www.netlifycms.org/docs/collection-types/
 
     CSS problems when switching to Netlify CMS layout
 
     SWR Layout - Improve footer responsiveness
 
-  Netlify: Support to custom previews
-  
-    https://zslabs.com/articles/mdx-previews-in-netlify-cms
-
-    https://answers.netlify.com/t/graphql-and-custom-previews/11955
-
-    Does it make sense to enable Change Log editting?
-
-    Can I selectively disable preview on some pages?
-
-  Blog: add author to frontmatter
-
-    widget: list
-      https://www.netlifycms.org/docs/collection-types/
 
   Support external authentication
 
@@ -58,3 +61,15 @@
     Content at home not centered on small screens
 
   Netlify: support admin in pt-BR
+
+  Spike: Nextra: How does search work?
+
+  Netlify-cms: Link preview: Improve status report
+    - Missing information waiting for deploy
+    - Missing information checking status in Check for Preview
+    
+  Netlify-cms: Link preview: Allow optional deploy
+    - All drafts generate builds
+    - Is that necessary?
+    
+  Netlify-cms: New publication: Cannot publish while feedback message does not dismiss
