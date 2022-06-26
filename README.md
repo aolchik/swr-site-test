@@ -19,6 +19,11 @@ pnpx netlify-cms-proxy-server
 
 Visit `127.0.0.1:3000` to preview your changes.
 
+To reindex, run 
+```bash
+pnpm build
+```
+
 ## Contributing
 
 Pending...

@@ -6,21 +6,6 @@
 
     Support full editing 
 
-      *Search is not indexing some pages
-
-        To reindex deleting cache and pnpm build was required
-          is cache delete required?
-
-        blog index page is not being indexed: why?
-
-        in production, new deploys reindex the content
-
-        roll back changed content
-
-      *Spike Netlify CMS content pagination
-
-        Clean unnecessary posts
-
       Netlify: Support to custom previews
       
         https://zslabs.com/articles/mdx-previews-in-netlify-cms
@@ -37,6 +22,8 @@
           https://www.netlifycms.org/docs/collection-types/
 
     CSS problems when switching to Netlify CMS layout
+
+      Open admin in a new tab
 
     SWR Layout - Improve footer responsiveness
 
@@ -79,3 +66,5 @@
     - Is that necessary?
     
   Netlify-cms: New publication: Cannot publish while feedback message does not dismiss
+
+  Netlify-cms: Application: Paginate collections
