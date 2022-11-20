@@ -32,7 +32,7 @@ module.exports = {
       name: "pages",
       label: "Pages",
       i18n: true,
-      editor: { preview: false },
+      editor: { preview: true },
       folder: "pages",
       create: false,
       slug: "{{slug}}",

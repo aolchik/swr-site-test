@@ -38,11 +38,23 @@ const FEEDBACK_LINK_WITH_TRANSLATIONS = {
   "pt-BR": "Perguntas? Envie seu feedback →",
 };
 
+// All properties are required so Netlify CMS preview works witouth dependency on nextra-theme-docs styles
 export default {
   projectLink: "https://github.com/vercel/swr",
   docsRepositoryBase: "https://github.com/vercel/swr-site/blob/master/pages",
   titleSuffix: " – SWR",
+  nextLinks: true,
+  prevLinks: true,
   search: true,
+  darkMode: true,
+  nextThemes: {
+    defaultTheme: 'system',
+    storageKey: 'theme',
+    forcedTheme: undefined
+  },
+  defaultMenuCollapsed: false,
+  footer: true,
+  gitTimestamp: 'Last updated on',
   unstable_flexsearch: true,
   floatTOC: true,
   feedbackLink: () => {
@@ -173,6 +185,15 @@ export default {
         );
     }
   },
+  searchPlaceholder: ({ locale }: { locale?: string }) => {
+    if (locale === 'zh-CN') return '搜索文档...'
+    return 'Search documentation...'
+  },
+  unstable_searchResultEmpty: () => (
+    <span className="block p-8 text-center text-gray-400 text-sm select-none">
+      No results found.
+    </span>
+  ),
   i18n: [
     { locale: "en-US", text: "English" },
     { locale: "pt-BR", text: "Português Brasileiro" },

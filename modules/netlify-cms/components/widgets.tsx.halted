@@ -1,0 +1,3373 @@
+import React from 'react'
+import PropTypes from 'prop-types'
+import MDX from 'mdx-scoped-runtime'
+import { MdxControl, MdxPreview } from 'netlify-cms-widget-mdx'
+import Authors, { Author } from '../../../components/authors'
+
+// FIXME
+//  Error: Invalid hook call
+//    H1 => More than one react installed
+//      Netlify-cms uses a different version of react (16.14.0)
+//        pnpm why react
+//      Trying to use latest version of netlify-cms, but netlify-cms from git repo does not include the version in package.json
+//         Need to install package from subfolder 
+//          https://stackoverflow.com/questions/39194648/npm-install-package-from-github-repo-subfolder
+//      pnpm
+//        pnpm is not installing node modules
+//          deleted stored files in ?aolchik/Library/pnpm/store/v3 to reinstall from zero
+//
+//       pnpm seems not to be installing node modules from git generating module_not_found
+//          https://nextjs.org/docs/messages/module-not-found
+//            need to build and commit dist folder
+//              https://stackoverflow.com/questions/42647387/npm-missing-dist-and-src-directories-when-trying-to-install-directly-from-a-git
+//          
+//          "netlify-cms": "https://gitpkg.now.sh/aolchik/netlify-cms/packages/netlify-cms?master",
+//            'https://gitpkg.now.sh/api/pkg?url=aolchik/netlify-cms/packages/netlify-cms&commit=master'
+//              Getting timeout error
+//                https://github.com/EqualMa/gitpkg/issues/25
+//
+//          "netlify-cms-app": "https://gitpkg.now.sh/aolchik/netlify-cms/packages/netlify-cms-app",
+//          "netlify-cms-lib-util": "https://gitpkg.now.sh/aolchik/netlify-cms/packages/netlify-lib-util",
+//          "react-codemirror2": "https://github.com/scniro/react-codemirror2",
+//
+//        install from scoped package
+//          > npm publish --access public
+//          how to solve dependencies to non-scoped packages?
+//            trying to use overrides
+//              discussion at https://github.com/pnpm/pnpm/discussions/4604
+//                article [Hosting multiple React applications on the same document](https://medium.jonasbandi.net/hosting-multiple-react-applications-on-the-same-document-c887df1a1fcd)
+//                could be a possibility, but supporting package is too old
+//
+//              using workspaces and hoisting may solve?
+//
+//              single-spa architecture may be useful? https://single-spa.js.org/docs/getting-started-overview
+//                seems a lot of work :(
+//  
+//      building netlify_cms is generating error ERR_OSSL_EVP_UNSUPPORTED
+//
+//      react-codemirror nested dependency is blocking upgrade to react 17
+//        https://github.com/netlify/netlify-cms/issues/5376
+//          fix: https://github.com/scniro/react-codemirror2/pull/224
+//      
+//      --legacy-peer-deps flag attempt
+//        https://github.com/netlify/netlify-cms/issues/5376
+//        https://stackoverflow.com/questions/66239691/what-does-npm-install-legacy-peer-deps-do-exactly-when-is-it-recommended-wh
+//        seems to be the default behaviour for pnpm (strict-peer-dependencies: false)
+//
+//      following thread in multiple instances of react
+//        https://github.com/facebook/react/issues/13991
+//          aliasing react in webpack
+//            does nextra has a different webpack loader?
+//
+//      how to debug NextraLayout utilization?
+//
+//    REFERENCES
+//      Invalid hook call in 9.0.6 - https://github.com/vercel/next.js/issues/9022
+//   
+//  PENDING
+//    remove cloned netlify-cms repo
+
+
+//import __nextra_withLayout__ from 'nextra-theme-docs'
+import { withSSG as __nextra_withSSG__ } from 'nextra/ssg'
+import __nextra_layoutConfig__ from '../../../theme.config'
+
+
+// const NextraLayout = __nextra_withSSG__(__nextra_withLayout__({
+//   filename: "${slash(filename)}",
+//   route: "${slash(route)}",
+// }, __nextra_layoutConfig__ ))
+
+
+// from nextra-theme-docs
+import { 
+    createContext, 
+    Fragment,
+    memo, 
+    MouseEventHandler,
+    ReactNode, 
+    useCallback, 
+    useContext, 
+    useEffect, 
+    useMemo, 
+    useRef, 
+    useState 
+} from 'react'
+import Router, { useRouter } from 'next/router'
+import cn from 'classnames'
+import { SkipNavContent } from '@reach/skip-nav'
+import { PageOpt } from 'nextra'
+import { ThemeProvider } from 'next-themes'
+import { Heading, PageMapItem } from 'nextra'
+import NextHead from 'next/head'
+import { useTheme } from 'next-themes'
+import getTitle from 'title'
+import Link from 'next/link'
+import scrollIntoView from 'scroll-into-view-if-needed'
+import Slugger from 'github-slugger'
+import matchSorter from 'match-sorter'
+import parseGitUrl from 'parse-git-url'
+import 'intersection-observer'
+import { MDXProvider } from '@mdx-js/react'
+import { Listbox, Transition } from '@headlessui/react'
+import FlexSearchImported from 'flexsearch'
+
+
+// src/types.ts 
+interface DocsThemeConfig {
+  docsRepositoryBase?: string
+  titleSuffix?:
+    | string
+    | React.FC<{
+        locale: string
+        config: DocsThemeConfig
+        title: string
+        meta: Record<string, any>
+      }>
+  nextLinks?: boolean
+  prevLinks?: boolean
+  search?: boolean
+  darkMode?: boolean
+  /**
+   * A subset of configurations for https://github.com/pacocoursey/next-themes#themeprovider
+   * - defaultTheme
+   * - storageKey
+   * - forcedTheme
+   */
+  nextThemes?: object
+  defaultMenuCollapsed?: boolean
+  font?: boolean
+  footer?: boolean
+  footerText?: string
+  footerEditLink?: string
+  feedbackLink?: string
+  feedbackLabels?: string
+  head?:
+    | React.ReactNode
+    | React.FC<{
+        locale: string
+        config: DocsThemeConfig
+        title: string
+        meta: Record<string, any>
+      }>
+  logo?: React.ReactNode
+  direction?: string
+  i18n?: { locale: string; text: string; direction: string }[]
+  customSearch?: boolean
+  searchPlaceholder?: string | ((props: { locale?: string }) => string)
+  projectLink?: string
+  github?: string
+  projectLinkIcon?: React.FC<{ locale: string }>
+  projectChatLink?: string
+  projectChatLinkIcon?: React.FC<{ locale: string }>
+  sidebarSubtitle?: React.FC<{ title: string }>
+  floatTOC?: boolean
+  banner?: React.FC<{ locale: string }>
+  bannerKey?: string
+  gitTimestamp?: string | React.FC<{ locale: string; timestamp: Date }>
+  tocExtraContent?: React.FC<{ locale: string }>
+  unstable_faviconGlyph?: string
+  unstable_flexsearch?: boolean
+  unstable_searchResultEmpty?: // @TODO: Test
+    | React.ReactNode
+    | React.FC<{
+        locale: string
+        config?: DocsThemeConfig
+        title?: string
+        meta?: Record<string, any>
+      }>
+}
+
+const defaultConfig = {
+  projectLink: 'https://github.com/shuding/nextra',
+  docsRepositoryBase: 'https://github.com/shuding/nextra',
+  titleSuffix: ' – Nextra',
+  nextLinks: true,
+  prevLinks: true,
+  search: true,
+  darkMode: true,
+  nextThemes: {
+    defaultTheme: 'system',
+    storageKey: 'theme',
+    forcedTheme: undefined
+  },
+  defaultMenuCollapsed: false,
+  // @TODO: Can probably introduce a set of options to use Google Fonts directly
+  // font: true,
+  footer: true,
+  footerText: `MIT ${new Date().getFullYear()} © Nextra.`,
+  footerEditLink: 'Edit this page',
+  gitTimestamp: 'Last updated on',
+  logo: (
+    <React.Fragment>
+      <span className="mr-2 font-extrabold hidden md:inline">Nextra</span>
+      <span className="text-gray-600 font-normal hidden md:inline">
+        The Next Docs Builder
+      </span>
+    </React.Fragment>
+  ),
+  head: (
+    <React.Fragment>
+      <meta name="msapplication-TileColor" content="#ffffff" />
+      <meta httpEquiv="Content-Language" content="en" />
+      <meta name="description" content="Nextra: the next docs builder" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@shuding_" />
+      <meta property="og:title" content="Nextra: the next docs builder" />
+      <meta property="og:description" content="Nextra: the next docs builder" />
+      <meta name="apple-mobile-web-app-title" content="Nextra" />
+    </React.Fragment>
+  ),
+  searchPlaceholder: ({ locale }: { locale?: string }) : string => { // @WIP
+    if (locale === 'zh-CN') return '搜索文档...'
+    return 'Search documentation...'
+  },
+  unstable_searchResultEmpty: () => (
+    <span className="block p-8 text-center text-gray-400 text-sm select-none">
+      No results found.
+    </span>
+  )
+  // direction: 'ltr',
+  // i18n: [{ locale: 'en-US', text: 'English', direction: 'ltr' }],
+}
+
+// src/config.ts 
+const ThemeConfigContext = React.createContext<DocsThemeConfig>({})
+const useConfig = () => React.useContext(ThemeConfigContext)
+
+// @WIP
+const renderComponent = <T,>(
+  ComponentOrNode: React.FC<T> | React.ReactNode,
+  props: T,
+  functionOnly?: boolean
+) => {
+  if (!ComponentOrNode) return null
+  if (typeof ComponentOrNode === 'function') {
+    if (functionOnly) return ComponentOrNode(props)
+    return <ComponentOrNode {...props} />
+  }
+  return ComponentOrNode
+}
+
+interface HeadProps {
+  title: string
+  locale?: string
+  meta: Record<string, any>
+}
+
+function Head({ title, locale, meta }: HeadProps) {
+  const config = useConfig()
+  const { theme, systemTheme } = useTheme()
+  const renderedTheme = theme === 'system' ? systemTheme : theme
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => setMounted(true), [])
+
+  return (
+    <NextHead>
+      <title>
+        {title}
+        {renderComponent(config.titleSuffix, { locale, config, title, meta })}
+      </title>
+      {renderComponent(config.head, { locale, config, title, meta }, true)}
+      {config.unstable_faviconGlyph ? (
+        <link
+          rel="icon"
+          href={`data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='.9em' font-size='90' text-anchor='middle'>${config.unstable_faviconGlyph}</text><style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";fill:black}@media(prefers-color-scheme:dark){text{fill:white}}</style></svg>`}
+        />
+      ) : null}
+      {!mounted ? (
+        <>
+          <meta
+            name="theme-color"
+            content="#ffffff"
+            media="(prefers-color-scheme: light)"
+          />
+          <meta
+            name="theme-color"
+            content="#111111"
+            media="(prefers-color-scheme: dark)"
+          />
+        </>
+      ) : (
+        <meta
+          name="theme-color"
+          content={renderedTheme === 'dark' ? '#111111' : '#ffffff'}
+        />
+      )}
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+      />
+    </NextHead>
+  )
+}
+
+export const getFSRoute = (asPath: string, locale?: string | undefined) => {
+  const cleanedPath = locale
+    ? asPath.replace(new RegExp(`\.${locale}(\/|$)`), '$1')
+    : asPath
+
+  return (
+    cleanedPath.replace(new RegExp('/index(/|$)'), '$1').split('#')[0] || '/'
+  )
+}
+
+// utils/normalize-pages.tsx
+function extendMeta(
+  meta: string | Record<string, any> = {},
+  fallback: Record<string, any>
+) {
+  if (typeof meta === 'string') {
+    meta = { title: meta }
+  }
+  const theme = Object.assign({}, fallback.theme, meta.theme)
+  return Object.assign({}, fallback, meta, { theme })
+}
+
+interface NormalItem extends Omit<PageMapItem, 'children'> {
+  title: string
+  type: string
+  children?: NormalItem[]
+  hidden?: boolean
+  withIndexPage?: boolean
+}
+interface PageItem extends Omit<PageMapItem, 'children'> {
+  title: string
+  type: string
+  href?: string
+  newWindow?: boolean
+  children?: PageItem[]
+  firstChildRoute?: string
+  hidden?: boolean
+  withIndexPage?: boolean
+}
+interface DocsItem extends Omit<PageMapItem, 'children'> {
+  title: string
+  type: string
+  children?: DocsItem[]
+  firstChildRoute?: string
+  withIndexPage?: boolean
+}
+
+function findFirstRoute(items: DocsItem[]): string | undefined {
+  for (const item of items) {
+    if (item.route) return item.route
+    if (item.children) {
+      const route = findFirstRoute(item.children)
+      if (route) return route
+    }
+  }
+}
+
+function normalizePages({
+  list,
+  locale,
+  defaultLocale,
+  route,
+  docsRoot = '',
+  underCurrentDocsRoot = false,
+  pageThemeContext = defaultThemeContext
+}: {
+  list: PageMapItem[]
+  locale?: string
+  defaultLocale?: string
+  route: string
+  docsRoot?: string
+  underCurrentDocsRoot?: boolean
+  pageThemeContext?: typeof defaultThemeContext
+}) {
+  let _meta: Record<string, any> | undefined
+  for (let item of list) {
+    if (item.name === 'meta.json') {
+      if (locale === item.locale) {
+        _meta = item.meta
+        break
+      }
+      // fallback
+      if (!_meta) {
+        _meta = item.meta
+      }
+    }
+  }
+  const meta = _meta || {}
+
+  const metaKeys = Object.keys(meta)
+
+  // All directories
+  const directories: NormalItem[] = []
+  const flatDirectories: NormalItem[] = []
+
+  // Docs directories
+  const docsDirectories: DocsItem[] = []
+  const flatDocsDirectories: DocsItem[] = []
+
+  // Page directories
+  const pageDirectories: PageItem[] = []
+  const topLevelPageItems: PageItem[] = []
+
+  let activeType: string | undefined = undefined
+  let activeIndex: number = 0
+  let activeThemeContext = pageThemeContext
+  let activePath: NormalItem[] = []
+
+  let metaKeyIndex = -1
+
+  const fallbackMeta = meta['*'] || {}
+  delete fallbackMeta.title
+  delete fallbackMeta.href
+
+  const items = list
+    .filter(
+      a =>
+        // not meta
+        a.name !== 'meta.json' &&
+        // not hidden routes
+        !a.name.startsWith('_') &&
+        // locale matches, or fallback to default locale
+        (a.locale === locale || a.locale === defaultLocale || !a.locale)
+    )
+    .sort((a, b) => {
+      const indexA = metaKeys.indexOf(a.name)
+      const indexB = metaKeys.indexOf(b.name)
+      if (indexA === -1 && indexB === -1) return a.name < b.name ? -1 : 1
+      if (indexA === -1) return 1
+      if (indexB === -1) return -1
+      return indexA - indexB
+    })
+    .flatMap(a => {
+      const items = []
+      const index = metaKeys.indexOf(a.name)
+
+      if (index !== -1) {
+        // Fill all skipped items in meta.
+        for (let i = metaKeyIndex + 1; i < index; i++) {
+          const key = metaKeys[i]
+          if (key !== '*') {
+            items.push({
+              name: key,
+              route: '',
+              ...meta[key]
+            })
+          }
+        }
+        metaKeyIndex = index
+      }
+
+      items.push(a)
+      return items
+    })
+
+  // Fill all skipped items in meta.
+  for (let i = metaKeyIndex + 1; i < metaKeys.length; i++) {
+    const key = metaKeys[i]
+    if (key !== '*') {
+      items.push({
+        name: key,
+        route: '#',
+        ...meta[key]
+      })
+    }
+  }
+
+  for (let i = 0; i < items.length; i++) {
+    const a = items[i]
+
+    // If there are two items with the same name, they must be a directory and a
+    // page. In that case we merge them, and use the page's link.
+    if (i + 1 < items.length && a.name === items[i + 1].name) {
+      items[i + 1] = { ...items[i + 1], withIndexPage: true }
+      if (a.children && !items[i + 1].children) {
+        items[i + 1].children = a.children
+      }
+      continue
+    }
+
+    const extendedMeta = extendMeta(meta[a.name], fallbackMeta)
+
+    const type = extendedMeta.type || 'doc'
+    const title =
+      extendedMeta.title ||
+      (type === 'separator' ? undefined : getTitle(a.name))
+    const hidden = extendedMeta.hidden
+
+    const extendedPageThemeContext = {
+      ...pageThemeContext,
+      ...extendedMeta.theme
+    }
+
+    // If the doc is under the active page root.
+    const isCurrentDocsTree = route.startsWith(docsRoot)
+
+    const normalizedChildren: any = a.children
+      ? normalizePages({
+          list: a.children,
+          locale,
+          defaultLocale,
+          route,
+          docsRoot: type === 'page' ? a.route : docsRoot,
+          underCurrentDocsRoot: underCurrentDocsRoot || isCurrentDocsTree,
+          pageThemeContext: extendedPageThemeContext
+        })
+      : undefined
+
+    const item: NormalItem = {
+      ...a,
+      title,
+      type,
+      hidden,
+      children: normalizedChildren ? [] : undefined
+    }
+    const docsItem: DocsItem = {
+      ...a,
+      title,
+      type,
+      hidden,
+      children: normalizedChildren ? [] : undefined
+    }
+    const pageItem: PageItem = {
+      ...a,
+      title,
+      type,
+      hidden,
+      children: normalizedChildren ? [] : undefined
+    }
+
+    if (a.route === route) {
+      activePath = [item]
+      activeType = type
+      // There can be multiple matches.
+      activeThemeContext = {
+        ...activeThemeContext,
+        ...extendedPageThemeContext
+      }
+      switch (type) {
+        case 'page':
+          activeIndex = topLevelPageItems.length
+          break
+        case 'doc':
+          if (isCurrentDocsTree) {
+            activeIndex = flatDocsDirectories.length
+          }
+      }
+    }
+
+    if (hidden) continue
+
+    if (normalizedChildren) {
+      if (
+        normalizedChildren.activeIndex !== undefined &&
+        normalizedChildren.activeType !== undefined
+      ) {
+        activeThemeContext = normalizedChildren.activeThemeContext
+        activeType = normalizedChildren.activeType
+        activePath = [item, ...normalizedChildren.activePath]
+        switch (activeType) {
+          case 'page':
+            activeIndex =
+              topLevelPageItems.length + normalizedChildren.activeIndex
+            break
+          case 'doc':
+            activeIndex =
+              flatDocsDirectories.length + normalizedChildren.activeIndex
+            break
+        }
+        if (a.withIndexPage) {
+          if (type === 'doc') {
+            activeIndex++
+          }
+        }
+      }
+    }
+
+    if (normalizedChildren) {
+      switch (type) {
+        case 'page':
+          pageItem.children.push(...normalizedChildren.pageDirectories)
+          docsDirectories.push(...normalizedChildren.docsDirectories)
+
+          // If it's a page with children inside, we inject itself as a page too.
+          if (normalizedChildren.flatDirectories.length) {
+            pageItem.firstChildRoute = findFirstRoute(
+              normalizedChildren.flatDirectories
+            )
+            topLevelPageItems.push(pageItem)
+          } else if (pageItem.withIndexPage) {
+            topLevelPageItems.push(pageItem)
+          }
+
+          break
+        case 'doc':
+          if (isCurrentDocsTree) {
+            Array.isArray(docsItem.children) &&
+              docsItem.children.push(...normalizedChildren.docsDirectories)
+            pageDirectories.push(...normalizedChildren.pageDirectories)
+
+            // Itself is a doc page.
+            if (item.withIndexPage) {
+              flatDocsDirectories.push(docsItem)
+            }
+          }
+      }
+
+      flatDirectories.push(...normalizedChildren.flatDirectories)
+      flatDocsDirectories.push(...normalizedChildren.flatDocsDirectories)
+
+      Array.isArray(item.children) &&
+        item.children.push(...normalizedChildren.directories)
+    } else {
+      flatDirectories.push(item)
+      switch (type) {
+        case 'page':
+          topLevelPageItems.push(pageItem)
+          break
+        case 'doc':
+          if (isCurrentDocsTree) {
+            flatDocsDirectories.push(docsItem)
+          }
+      }
+    }
+
+    directories.push(item)
+    switch (type) {
+      case 'page':
+        pageDirectories.push(pageItem)
+        if (isCurrentDocsTree && underCurrentDocsRoot) {
+          docsDirectories.push(pageItem)
+        }
+        break
+      case 'doc':
+      case 'separator':
+        if (isCurrentDocsTree) {
+          docsDirectories.push(docsItem)
+        }
+    }
+  }
+
+  return {
+    activeType,
+    activeIndex,
+    activeThemeContext,
+    activePath,
+    directories,
+    flatDirectories,
+    docsDirectories,
+    flatDocsDirectories,
+    pageDirectories,
+    topLevelPageItems
+  }
+}
+
+// src/misc/theme-context.tsx 
+const defaultThemeContext = {
+  navbar: true,
+  sidebar: true,
+  toc: true,
+  pagination: true,
+  footer: true,
+  layout: 'default',
+  typesetting: 'default',
+  breadcrumb: true
+} as PageTheme
+
+type PageTheme = {
+  navbar: Boolean
+  sidebar: Boolean
+  toc: Boolean
+  pagination: Boolean
+  footer: Boolean
+  layout: 'default' | 'full' | 'raw'
+  typesetting: 'default' | 'article'
+  breadcrumb: Boolean
+}
+
+// src/utils/menu-context.ts 
+interface MenuContextValue {
+  menu: boolean
+  setMenu: (data: boolean) => any
+  defaultMenuCollapsed: boolean
+}
+const MenuContext = createContext<MenuContextValue>({
+  menu: false,
+  setMenu: () => {},
+  defaultMenuCollapsed: true
+})
+function useMenuContext() {
+  return useContext(MenuContext)
+}
+
+// src/navbar.tsx 
+interface NavBarProps {
+  isRTL?: boolean | null
+  flatDirectories: NormalItem[]
+  items: PageItem[]
+}
+
+function Navbar({ flatDirectories, items }: NavBarProps) {
+  const config = useConfig()
+  const { locale, asPath } = useRouter()
+  const activeRoute = getFSRoute(asPath, locale)
+  const { menu, setMenu } = useMenuContext()
+
+  const bannerKey = config.bannerKey || 'nextra-banner'
+
+  return (
+    <>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `try{if(localStorage.getItem(${JSON.stringify(
+            bannerKey
+          )})==='0'){document.body.classList.add('nextra-banner-hidden')}}catch(e){}`
+        }}
+      />
+      {config.banner ? (
+        <div className="nextra-banner-container text-sm h-10 sticky top-0 md:relative pl-10 flex items-center text-slate-50 bg-neutral-900  dark:text-white z-20 dark:bg-[linear-gradient(1deg,#383838,#212121)]">
+          <div className="max-w-[90rem] mx-auto w-full py-1 text-center font-medium pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)] truncate whitespace-nowrap">
+            {renderComponent(config.banner, {
+              locale
+            })}
+          </div>
+          <button
+            className="mr-2 w-8 opacity-80 hover:opacity-100"
+            onClick={() => {
+              try {
+                localStorage.setItem(bannerKey, '0')
+              } catch (e) {}
+              document.body.classList.add('nextra-banner-hidden')
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 mx-auto"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+      ) : null}
+      <div
+        className={
+          'nextra-nav-container z-20 sticky bg-transparent w-full top-0'
+        }
+      >
+        <div className="nextra-nav-container-blur absolute w-full h-full bg-white dark:bg-dark pointer-events-none" />
+        <nav className="flex gap-2 max-w-[90rem] mx-auto items-center left-0 right-0 h-16 pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)]">
+          <div className="flex items-center mr-2 flex-auto">
+            <Link href="/">
+              <a className="no-underline text-current inline-flex items-center hover:opacity-75">
+                {renderComponent(config.logo, { locale })}
+              </a>
+            </Link>
+          </div>
+
+          <div className="flex-1" />
+
+          {items
+            ? items.map(page => {
+                if (page.hidden) return null
+
+                let href = page.href || page.route || '#'
+
+                // If it's a directory
+                if (page.children) {
+                  href =
+                    (page.withIndexPage ? page.route : page.firstChildRoute) ||
+                    href
+                }
+
+                const isActive =
+                  page.route === activeRoute ||
+                  activeRoute.startsWith(page.route + '/')
+
+                return (
+                  <Link href={href} key={page.route}>
+                    <a
+                      className={cn(
+                        'nextra-nav-link',
+                        'no-underline whitespace-nowrap p-2 -ml-2 hidden md:inline-block',
+                        isActive
+                          ? 'active text-current font-medium'
+                          : 'text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'
+                      )}
+                      aria-selected={isActive}
+                      {...(page.newWindow
+                        ? { target: '_blank', rel: 'noopener noreferrer' }
+                        : {})}
+                    >
+                      {page.title}
+                    </a>
+                  </Link>
+                )
+              })
+            : null}
+
+          <div>
+            <div className="hidden md:inline-block">
+              {config.customSearch ||
+                (config.search ? (
+                  config.unstable_flexsearch ? (
+                    <FlexSearch />
+                  ) : (
+                    <Search directories={flatDirectories} />
+                  )
+                ) : null)}
+            </div>
+          </div>
+
+          {config.projectLink || config.github ? (
+            <a
+              className="text-current p-2"
+              href={config.projectLink || config.github}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {config.projectLinkIcon ? (
+                renderComponent(config.projectLinkIcon, { locale })
+              ) : (
+                <React.Fragment>
+                  <GitHubIcon height={24} />
+                  <span className="sr-only">GitHub</span>
+                </React.Fragment>
+              )}
+            </a>
+          ) : null}
+          {config.projectChatLink ? (
+            <a
+              className="text-current p-2"
+              href={config.projectChatLink}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {config.projectChatLinkIcon ? (
+                renderComponent(config.projectChatLinkIcon, { locale })
+              ) : (
+                <React.Fragment>
+                  <DiscordIcon height={24} />
+                  <span className="sr-only">Discord</span>
+                </React.Fragment>
+              )}
+            </a>
+          ) : null}
+
+          <button
+            className="nextra-menu-icon block md:hidden p-2"
+            onClick={() => setMenu(!menu)}
+          >
+            <svg
+              fill="none"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className={cn({ open: menu })}
+            >
+              <g>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16"
+                />
+              </g>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 12h16"
+              />
+              <g>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 18h16"
+                />
+              </g>
+            </svg>
+          </button>
+        </nav>
+      </div>
+    </>
+  )
+}
+
+// src/learning/nextjs/nextra/packages/nextra-theme-docs/src/flexsearch.js
+const FlexSearchItem = ({
+  page,
+  first,
+  title,
+  active,
+  href,
+  onHover,
+  onClick,
+  excerpt
+}) => {
+  return (
+    <>
+      {first ? (
+        <div className="nextra-search-section mx-2.5 px-2.5 pb-1.5 mb-2 mt-6 first:mt-0 font-semibold uppercase text-xs text-gray-500 select-none dark:text-gray-300">
+          {page}
+        </div>
+      ) : null}
+      <Link href={Router.basePath + href}>
+        <a
+          className="block no-underline"
+          onMouseMove={onHover}
+          onClick={onClick}
+        >
+          <li className={cn({ active })}>
+            <div className="font-semibold dark:text-white leading-5">
+              {title}
+            </div>
+            {excerpt ? (
+              <div className="excerpt mt-1 text-gray-600 text-sm leading-[1.35rem] dark:text-gray-400">
+                {excerpt}
+              </div>
+            ) : null}
+          </li>
+        </a>
+      </Link>
+    </>
+  )
+}
+
+interface StringWithMatchHighlightsProps {
+  content: string
+  search: string
+}
+
+const MemoedStringWithMatchHighlights = memo(
+  function StringWithMatchHighlights({ content, search } : StringWithMatchHighlightsProps) : JSX.Element {
+    const splittedText = content.split('')
+    const escapedSearch = search.trim().replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+    const regexp = RegExp('(' + escapedSearch.split(' ').join('|') + ')', 'ig')
+    let match
+    let id = 0
+    let index = 0
+    const res = []
+
+    while ((match = regexp.exec(content)) !== null) {
+      res.push(
+        <Fragment key={id++}>
+          {splittedText.splice(0, match.index - index).join('')}
+        </Fragment>
+      )
+      res.push(
+        <span className="highlight" key={id++}>
+          {splittedText.splice(0, regexp.lastIndex - match.index).join('')}
+        </span>
+      )
+      index = regexp.lastIndex
+    }
+
+    res.push(<Fragment key={id++}>{splittedText.join('')}</Fragment>)
+
+    // @TODO: Test change
+    return (
+      <>
+        { res.join() }
+      </>
+    )
+  }
+)
+
+// This can be global for better caching.
+const indexes = {}
+
+function FlexSearch() {
+  const config = useConfig()
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [show, setShow] = useState(false)
+  const [search, setSearch] = useState('')
+  const [active, setActive] = useState(0)
+  const [results, setResults] = useState([])
+  const input = useRef(null)
+  const { setMenu } = useMenuContext()
+
+  const finishSearch = () => {
+    if (input.current) {
+      input.current.value = ''
+      input.current.blur()
+    }
+    setSearch('')
+    setShow(false)
+    setMenu(false)
+  }
+
+  const doSearch = () => {
+    if (!search) return
+
+    const localeCode = Router.locale || 'default'
+    const index = indexes[localeCode]
+
+    if (!index) return
+
+    const [pageIndex, sectionIndex] = index
+
+    // Show the results for the top 5 pages
+    const pageResults = (
+      pageIndex.search(search, {
+        enrich: true,
+        suggest: true
+      })[0]?.result || []
+    ).slice(0, 5)
+
+    const results = []
+
+    const pageTitleMatches = {}
+
+    for (let i = 0; i < pageResults.length; i++) {
+      const result = pageResults[i]
+      pageTitleMatches[i] = 0
+
+      // Show the top 5 results for each page
+      const sectionResults = (
+        sectionIndex.search(search, {
+          enrich: true,
+          suggest: true,
+          tag: 'page_' + result.id
+        })[0]?.result || []
+      ).slice(0, 5)
+
+      let firstItemOfPage = true
+      const occurred = {}
+
+      for (let j = 0; j < sectionResults.length; j++) {
+        const section = sectionResults[j]
+        const isMatchingTitle = typeof section.doc.display !== 'undefined'
+        const content = section.doc.display || section.doc.content
+        const url = section.doc.url
+
+        if (isMatchingTitle) {
+          pageTitleMatches[i]++
+        }
+
+        if (occurred[url + '@' + content]) continue
+        occurred[url + '@' + content] = true
+
+        results.push({
+          _page_rk: i,
+          _section_rk: j,
+          first: firstItemOfPage,
+          route: url,
+          page: result.doc.title,
+          title: (
+            <MemoedStringWithMatchHighlights
+              content={section.doc.title}
+              search={search}
+            />
+          ),
+          excerpt: content ? (
+            <MemoedStringWithMatchHighlights
+              content={content}
+              search={search}
+            />
+          ) : null
+        })
+
+        firstItemOfPage = false
+      }
+    }
+
+    setResults(
+      results.sort((a, b) => {
+        // Sort by number of matches in the title.
+        if (a._page_rk === b._page_rk) {
+          return a._section_rk - b._section_rk
+        }
+        if (pageTitleMatches[a._page_rk] !== pageTitleMatches[b._page_rk]) {
+          return pageTitleMatches[b._page_rk] - pageTitleMatches[a._page_rk]
+        }
+        return a._page_rk - b._page_rk
+      })
+    )
+  }
+  useEffect(doSearch, [search])
+
+  const handleKeyDown = useCallback(
+    e => {
+      switch (e.key) {
+        case 'ArrowDown': {
+          e.preventDefault()
+          if (active + 1 < results.length) {
+            setActive(active + 1)
+            const activeElement = document.querySelector(
+              `.nextra-flexsearch ul > a:nth-of-type(${active + 2})`
+            )
+            if (activeElement && activeElement.scrollIntoView) {
+              activeElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+              })
+            }
+          }
+          break
+        }
+        case 'ArrowUp': {
+          e.preventDefault()
+          if (active - 1 >= 0) {
+            setActive(active - 1)
+            const activeElement = document.querySelector(
+              `.nextra-flexsearch ul > a:nth-of-type(${active})`
+            )
+            if (activeElement && activeElement.scrollIntoView) {
+              activeElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+              })
+            }
+          }
+          break
+        }
+        case 'Enter': {
+          router.push(results[active].route)
+          finishSearch()
+          break
+        }
+        case 'Escape': {
+          setShow(false)
+          input.current.blur()
+          break
+        }
+      }
+    },
+    [active, results, router]
+  )
+
+  const load = async () => {
+    const localeCode = Router.locale || 'default'
+    if (!indexes[localeCode] && !loading) {
+      setLoading(true)
+      const data = await (
+        await fetch(
+          `${Router.basePath}/_next/static/chunks/nextra-data-${localeCode}.json`
+        )
+      ).json()
+
+      const pageIndex = new FlexSearchImported.Document({
+        cache: 100,
+        tokenize: 'full',
+        document: {
+          id: 'id',
+          index: 'content',
+          store: ['title']
+        },
+        context: {
+          resolution: 9,
+          depth: 2,
+          bidirectional: true
+        }
+      })
+
+      const sectionIndex = new FlexSearchImported.Document({
+        cache: 100,
+        tokenize: 'full',
+        document: {
+          id: 'id',
+          index: 'content',
+          tag: 'pageId',
+          store: ['title', 'content', 'url', 'display']
+        },
+        context: {
+          resolution: 9,
+          depth: 2,
+          bidirectional: true
+        }
+      })
+
+      let pageId = 0
+      for (let route in data) {
+        let pageContent = ''
+        ++pageId
+
+        for (let heading in data[route].data) {
+          const [hash, text] = heading.split('#')
+          const url = route + (hash ? '#' + hash : '')
+          const title = text || data[route].title
+
+          const paragraphs = (data[route].data[heading] || '')
+            .split('\n')
+            .filter(Boolean)
+
+          sectionIndex.add({
+            id: url,
+            url,
+            title,
+            pageId: `page_${pageId}`,
+            content: title,
+            display: paragraphs[0] || ''
+          })
+
+          for (let i = 0; i < paragraphs.length; i++) {
+            sectionIndex.add({
+              id: url + '_' + i,
+              url,
+              title,
+              pageId: `page_${pageId}`,
+              content: paragraphs[i]
+            })
+          }
+
+          // Add the page itself.
+          pageContent += ' ' + title + ' ' + (data[route].data[heading] || '')
+        }
+
+        pageIndex.add({
+          id: pageId,
+          title: data[route].title,
+          content: pageContent
+        })
+      }
+
+      indexes[localeCode] = [pageIndex, sectionIndex]
+
+      setLoading(false)
+      setSearch(s => (s ? s + ' ' : s)) // Trigger the effect
+    }
+  }
+
+  useEffect(() => {
+    setActive(0)
+  }, [search])
+
+  useEffect(() => {
+    const inputs = ['input', 'select', 'button', 'textarea']
+
+    const down = e => {
+      if (
+        document.activeElement &&
+        inputs.indexOf(document.activeElement.tagName.toLowerCase()) === -1
+      ) {
+        if (e.key === '/' || (e.key === 'k' && e.metaKey)) {
+          e.preventDefault()
+          input.current.focus()
+        } else if (e.key === 'Escape') {
+          setShow(false)
+          input.current.blur()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', down)
+    return () => window.removeEventListener('keydown', down)
+  }, [])
+
+  const renderList = show && !!search
+
+  return (
+    <div className="relative w-full nextra-search nextra-flexsearch md:w-64">
+      {renderList && (
+        <div className="z-10 search-overlay" onClick={() => setShow(false)} />
+      )}
+      <div className="relative flex items-center">
+        <input
+          onChange={e => {
+            setSearch(e.target.value)
+            setShow(true)
+          }}
+          className="block w-full px-3 py-2 leading-tight rounded-lg appearance-none focus:outline-none focus:ring-1 focus:ring-gray-200 focus:bg-white hover:bg-opacity-5 transition-colors dark:focus:bg-dark dark:focus:ring-gray-100 dark:focus:ring-opacity-20"
+          type="search"
+          placeholder="Search files..." // @FIXME
+          // placeholder={renderComponent( 
+          //   config.searchPlaceholder,
+          //   {
+          //     locale: router.locale
+          //   },
+          //   true
+          // )}
+          onKeyDown={handleKeyDown}
+          onFocus={() => {
+            load()
+            setShow(true)
+          }}
+          ref={input}
+          spellCheck={false}
+        />
+        {renderList ? null : (
+          <div className="hidden sm:flex absolute inset-y-0 right-0 py-1.5 pr-1.5 select-none pointer-events-none">
+            <kbd className="inline-flex items-center px-1.5 font-mono text-sm font-medium bg-white dark:bg-dark dark:bg-opacity-50 text-gray-400 dark:text-gray-500 dark:border-gray-100 dark:border-opacity-20 border rounded">
+              /
+            </kbd>
+          </div>
+        )}
+      </div>
+      <Transition
+        show={renderList}
+        as={React.Fragment}
+        leave="transition duration-100"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <ul className="absolute z-20 px-0 py-2.5 m-0 mt-2 top-full rounded-xl overflow-hidden overscroll-contain shadow-xl list-none">
+          {loading ? (
+            <span className="p-8 text-center text-gray-400 text-sm select-none flex justify-center">
+              <svg
+                className="animate-spin -ml-1 mr-2 h-5 w-5 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <span>Loading...</span>
+            </span>
+          ) : results.length === 0 ? (
+            renderComponent(config.unstable_searchResultEmpty, { // @WIP
+              locale: router.locale
+            })
+          ) : (
+            results.map((res, i) => {
+              return (
+                <FlexSearchItem
+                  first={res.first}
+                  key={`search-item-${i}`}
+                  page={res.page}
+                  title={res.title}
+                  href={res.route}
+                  excerpt={res.excerpt}
+                  active={i === active}
+                  onHover={() => setActive(i)}
+                  onClick={() => {
+                    finishSearch()
+                  }}
+                />
+              )
+            })
+          )}
+        </ul>
+      </Transition>
+    </div>
+  )
+}
+
+// src/icons/github.tsx
+const GitHubIcon = ({ height = 40 }) => {
+  return (
+    <svg height={height} viewBox="2 2 20 20" fill="none" aria-hidden="true">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 3C7.0275 3 3 7.12937 3 12.2276C3 16.3109 5.57625 19.7597 9.15374 20.9824C9.60374 21.0631 9.77249 20.7863 9.77249 20.5441C9.77249 20.3249 9.76125 19.5982 9.76125 18.8254C7.5 19.2522 6.915 18.2602 6.735 17.7412C6.63375 17.4759 6.19499 16.6569 5.8125 16.4378C5.4975 16.2647 5.0475 15.838 5.80124 15.8264C6.51 15.8149 7.01625 16.4954 7.18499 16.7723C7.99499 18.1679 9.28875 17.7758 9.80625 17.5335C9.885 16.9337 10.1212 16.53 10.38 16.2993C8.3775 16.0687 6.285 15.2728 6.285 11.7432C6.285 10.7397 6.63375 9.9092 7.20749 9.26326C7.1175 9.03257 6.8025 8.08674 7.2975 6.81794C7.2975 6.81794 8.05125 6.57571 9.77249 7.76377C10.4925 7.55615 11.2575 7.45234 12.0225 7.45234C12.7875 7.45234 13.5525 7.55615 14.2725 7.76377C15.9937 6.56418 16.7475 6.81794 16.7475 6.81794C17.2424 8.08674 16.9275 9.03257 16.8375 9.26326C17.4113 9.9092 17.76 10.7281 17.76 11.7432C17.76 15.2843 15.6563 16.0687 13.6537 16.2993C13.98 16.5877 14.2613 17.1414 14.2613 18.0065C14.2613 19.2407 14.25 20.2326 14.25 20.5441C14.25 20.7863 14.4188 21.0746 14.8688 20.9824C16.6554 20.364 18.2079 19.1866 19.3078 17.6162C20.4077 16.0457 20.9995 14.1611 21 12.2276C21 7.12937 16.9725 3 12 3Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+// src/icons/discord.tsx
+const DiscordIcon = ({ height = 40 }) => {
+  return (
+    <svg
+      height={height}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 146 146"
+      aria-hidden="true"
+    >
+      <title>Discord</title>
+      <path
+        d="M107.75 125.001s-4.5-5.375-8.25-10.125c16.375-4.625 22.625-14.875 22.625-14.875-5.125 3.375-10 5.75-14.375 7.375-6.25 2.625-12.25 4.375-18.125 5.375-12 2.25-23 1.625-32.375-.125-7.125-1.375-13.25-3.375-18.375-5.375-2.875-1.125-6-2.5-9.125-4.25-.375-.25-.75-.375-1.125-.625-.25-.125-.375-.25-.5-.375-2.25-1.25-3.5-2.125-3.5-2.125s6 10 21.875 14.75c-3.75 4.75-8.375 10.375-8.375 10.375-27.625-.875-38.125-19-38.125-19 0-40.25 18-72.875 18-72.875 18-13.5 35.125-13.125 35.125-13.125l1.25 1.5c-22.5 6.5-32.875 16.375-32.875 16.375s2.75-1.5 7.375-3.625c13.375-5.875 24-7.5 28.375-7.875.75-.125 1.375-.25 2.125-.25 7.625-1 16.25-1.25 25.25-.25 11.875 1.375 24.625 4.875 37.625 12 0 0-9.875-9.375-31.125-15.875l1.75-2S110 19.626 128 33.126c0 0 18 32.625 18 72.875 0 0-10.625 18.125-38.25 19zM49.625 66.626c-7.125 0-12.75 6.25-12.75 13.875s5.75 13.875 12.75 13.875c7.125 0 12.75-6.25 12.75-13.875.125-7.625-5.625-13.875-12.75-13.875zm45.625 0c-7.125 0-12.75 6.25-12.75 13.875s5.75 13.875 12.75 13.875c7.125 0 12.75-6.25 12.75-13.875s-5.625-13.875-12.75-13.875z"
+        fillRule="nonzero"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+// src/misc/active-anchor.tsx
+type ActiveAnchor = Record<
+  string,
+  {
+    isActive?: boolean
+    aboveHalfViewport: boolean
+    index: number
+    insideHalfViewport: boolean
+  }
+>
+const ActiveAnchorContext = createContext<ActiveAnchor>({})
+const ActiveAnchorSetterContext = createContext<
+  (value: ActiveAnchor | ((prevState: ActiveAnchor) => ActiveAnchor)) => void
+>(s => s)
+
+// Separate the state as 2 contexts here to avoid
+// re-renders of the content triggered by the state update.
+const useActiveAnchor = () => useContext(ActiveAnchorContext)
+const useActiveAnchorSet = () => useContext(ActiveAnchorSetterContext)
+const ActiveAnchor: React.FC = ({ children }) => {
+  const state = useState<ActiveAnchor>({})
+  return (
+    <ActiveAnchorContext.Provider value={state[0]}>
+      <ActiveAnchorSetterContext.Provider value={state[1]}>
+        {children}
+      </ActiveAnchorSetterContext.Provider>
+    </ActiveAnchorContext.Provider>
+  )
+}
+
+// src/sidebar.ts
+const TreeState: Record<string, boolean> = {}
+
+interface FolderProps {
+  item: PageItem | NormalItem
+  anchors: string[]
+}
+
+const Folder = React.memo(FolderImpl)
+function FolderImpl({ item, anchors }: FolderProps) {
+  const { asPath, locale } = useRouter()
+  const routeOriginal = getFSRoute(asPath, locale)
+  const route = routeOriginal.split('#')[0]
+  const active = route === item.route + '/' || route + '/' === item.route + '/'
+  const activeRouteInside = active || route.startsWith(item.route + '/')
+
+  const { defaultMenuCollapsed } = useMenuContext()
+  const open =
+    typeof TreeState[item.route] !== 'undefined'
+      ? TreeState[item.route]
+      : active || activeRouteInside || !defaultMenuCollapsed
+
+  const rerender = useState({})[1]
+  const { setMenu } = useMenuContext()
+
+  useEffect(() => {
+    if (activeRouteInside) {
+      TreeState[item.route] = true
+    }
+  }, [activeRouteInside])
+
+  const link = (
+    <a
+      className="cursor-pointer"
+      onClick={e => {
+        const clickedToggleIcon = ['svg', 'path'].includes(
+          (e.target as HTMLElement).tagName.toLowerCase()
+        )
+        if (clickedToggleIcon) {
+          e.preventDefault()
+        }
+        if (item.withIndexPage) {
+          // If it's focused, we toggle it. Otherwise always open it.
+          if (active || clickedToggleIcon) {
+            TreeState[item.route] = !open
+          } else {
+            TreeState[item.route] = true
+            setMenu(false)
+          }
+          rerender({})
+          return
+        }
+        if (active) return
+        TreeState[item.route] = !open
+        rerender({})
+      }}
+    >
+      <span className="flex items-center justify-between">
+        {item.title}
+        <ArrowRight
+          height="1em"
+          className={
+            'ml-2 p-[2px] rounded-sm min-w-[18px] h-[18px] dark:hover:bg-gray-100 hover:bg-gray-800 hover:bg-opacity-5 dark:hover:bg-opacity-5'
+          }
+          childProps={{
+            className: cn(
+              'transition-transform origin-center',
+              open ? 'rotate-90' : ''
+            )
+          }}
+        />
+      </span>
+    </a>
+  )
+
+  return (
+    <li className={cn({ open, active })}>
+      {item.withIndexPage ? <Link href={item.route}>{link}</Link> : link}
+      <Collapse open={open}>
+        {Array.isArray(item.children) && (
+          <Menu
+            submenu
+            directories={item.children}
+            base={item.route}
+            anchors={anchors}
+          />
+        )}
+      </Collapse>
+    </li>
+  )
+}
+
+interface SeparatorProps {
+  title: string | undefined
+  topLevel: boolean
+}
+function Separator({ title, topLevel }: SeparatorProps) {
+  const hasTitle = typeof title !== 'undefined'
+
+  const { sidebarSubtitle } = useConfig()
+
+  return (
+    <li
+      className={cn(
+        topLevel ? 'first:mt-1' : 'first:mt-2',
+        hasTitle ? 'mt-5 mb-2' : 'my-4'
+      )}
+    >
+      {hasTitle ? (
+        <div className="text-sm mx-2 py-1.5 font-semibold no-underline text-gray-900 dark:text-gray-100">
+          {sidebarSubtitle
+            ? renderComponent(sidebarSubtitle, { title })
+            : title}
+        </div>
+      ) : (
+        <hr className="mx-2 border-t border-gray-200 dark:border-primary-100 dark:border-opacity-10" />
+      )}
+    </li>
+  )
+}
+
+interface FileProps {
+  item: PageItem | NormalItem
+  anchors: string[]
+  topLevel: boolean
+}
+function File({ item, anchors, topLevel }: FileProps) {
+  const { asPath, locale } = useRouter()
+  const route = getFSRoute(asPath, locale)
+  const active = route === item.route + '/' || route + '/' === item.route + '/'
+  const slugger = new Slugger()
+  const activeAnchor = useActiveAnchor()
+  const { setMenu } = useMenuContext()
+
+  const title = item.title
+
+  if (item.type === 'separator') {
+    return <Separator title={title} topLevel={topLevel} />
+  }
+
+  if (anchors && anchors.length) {
+    if (active) {
+      let activeIndex = 0
+      const anchorInfo = anchors.map((anchor, i) => {
+        const text = anchor
+        const slug = slugger.slug(text)
+        if (activeAnchor[slug] && activeAnchor[slug].isActive) {
+          activeIndex = i
+        }
+        return { text, slug }
+      })
+
+      return (
+        <li className={active ? 'active' : ''}>
+          <Link href={(item as PageItem).href || item.route}>
+            <a
+              {...((item as PageItem).newWindow
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
+              onClick={() => {
+                setMenu(false)
+              }}
+            >
+              {title}
+            </a>
+          </Link>
+          <ul>
+            {anchors.map((_, i) => {
+              const { slug, text } = anchorInfo[i]
+              const isActive = i === activeIndex
+
+              return (
+                <li key={`a-${slug}`}>
+                  <a
+                    href={'#' + slug}
+                    className={isActive ? 'active-anchor' : ''}
+                    onClick={() => {
+                      setMenu(false)
+                    }}
+                  >
+                    <span className="flex text-sm">
+                      <span className="opacity-25">#</span>
+                      <span className="mr-2"></span>
+                      <span className="inline-block">{text}</span>
+                    </span>
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+        </li>
+      )
+    }
+  }
+
+  return (
+    <li className={active ? 'active' : ''}>
+      <Link href={(item as PageItem).href || item.route}>
+        <a
+          {...((item as PageItem).newWindow
+            ? { target: '_blank', rel: 'noopener noreferrer' }
+            : {})}
+          onClick={() => {
+            setMenu(false)
+          }}
+        >
+          {title}
+        </a>
+      </Link>
+    </li>
+  )
+}
+
+interface SidebarMenuProps {
+  directories: PageItem[] | NormalItem[]
+  anchors: string[]
+  base?: string
+  submenu?: boolean
+}
+function SidebarMenu({ directories, anchors, submenu }: SidebarMenuProps) {
+  return (
+    <ul>
+      {directories.map(item => {
+        if (item.children && (item.children.length || !item.withIndexPage)) {
+          return <Folder key={item.name} item={item} anchors={anchors} />
+        }
+        return (
+          <File
+            key={item.name}
+            item={item}
+            anchors={anchors}
+            topLevel={!submenu}
+          />
+        )
+      })}
+    </ul>
+  )
+}
+
+interface SideBarProps {
+  directories: PageItem[]
+  flatDirectories: NormalItem[]
+  fullDirectories: NormalItem[]
+  asPopover?: boolean
+  headings?: Heading[]
+  isRTL?: boolean
+  includePlaceholder: boolean
+}
+
+const emptyHeading: any[] = []
+export default function Sidebar({
+  directories,
+  flatDirectories,
+  fullDirectories,
+  asPopover = false,
+  headings = emptyHeading,
+  includePlaceholder
+}: SideBarProps) {
+  const config = useConfig()
+  const anchors = useMemo(
+    () =>
+      headings
+        .filter(v => v.children && v.depth === 2 && v.type === 'heading')
+        .map(v => getHeadingText(v))
+        .filter(Boolean),
+    [headings]
+  )
+
+  const { menu } = useMenuContext()
+  useEffect(() => {
+    if (menu) {
+      document.body.classList.add('overflow-hidden', 'md:overflow-auto')
+    } else {
+      document.body.classList.remove('overflow-hidden', 'md:overflow-auto')
+    }
+  }, [menu])
+
+  useEffect(() => {
+    const activeElement = document.querySelector('.nextra-sidebar li.active')
+
+    if (activeElement) {
+      scrollIntoView(activeElement, {
+        block: 'center',
+        inline: 'center',
+        scrollMode: 'always',
+        boundary: document.querySelector('.nextra-sidebar-container')
+      })
+    }
+  }, [])
+
+  const hasMenu = !!(config.i18n || config.darkMode)
+
+  return (
+    <>
+      {includePlaceholder && asPopover ? (
+        <div className="hidden xl:block w-64 h-0 flex-shrink-0" />
+      ) : null}
+      <aside
+        className={cn(
+          'nextra-sidebar-container nextra-scrollbar fixed flex-shrink-0 w-full md:w-64 md:sticky z-[15] top-16 self-start overflow-y-auto transform-none h-[calc(100vh-4rem)]',
+          asPopover ? 'md:hidden' : 'md:block',
+          hasMenu ? 'with-menu' : '',
+          { open: menu }
+        )}
+      >
+        <div className="nextra-sidebar select-none w-full h-full md:h-auto pl-[calc(env(safe-area-inset-left)-1.5rem)]">
+          <div className="p-4 min-h-[calc(100vh-4rem-61px)]">
+            <div className="nextra-sidebar-search mb-4 block md:hidden">
+              {config.customSearch ||
+                (config.search ? (
+                  config.unstable_flexsearch ? (
+                    <FlexSearch />
+                  ) : (
+                    <Search directories={flatDirectories} />
+                  )
+                ) : null)}
+            </div>
+            <div className="hidden md:block">
+              <SidebarMenu
+                directories={directories}
+                anchors={
+                  // When the viewport size is larger than `md`, hide the anchors in
+                  // the sidebar when `floatTOC` is enabled.
+                  config.floatTOC ? [] : anchors
+                }
+              />
+            </div>
+            <div className="md:hidden">
+              <SidebarMenu
+                directories={fullDirectories}
+                anchors={
+                  // Always show the anchor links on mobile (`md`).
+                  anchors
+                }
+              />
+            </div>
+          </div>
+
+          {!hasMenu ? null : (
+            <div className="nextra-sidebar-menu mx-4 border-t dark:border-neutral-800 shadow-[0_-12px_16px_white] dark:shadow-[0_-12px_16px_#111]">
+              <div className="bg-white dark:bg-dark py-4 flex gap-1 pb-4">
+                {config.i18n ? (
+                  <div className="flex-1 relative">
+                    <LocaleSwitch options={config.i18n} />
+                  </div>
+                ) : null}
+                {config.darkMode ? (
+                  <>
+                    <div
+                      className={cn('relative md:hidden', {
+                        locale: config.i18n,
+                        'flex-1': !config.i18n
+                      })}
+                    >
+                      <ThemeSwitch lite={false} />
+                    </div>
+                    <div
+                      className={cn(
+                        'relative hidden md:block',
+                        {
+                          locale: config.i18n
+                        },
+                        config.i18n ? 'grow-0' : 'flex-1'
+                      )}
+                    >
+                      <ThemeSwitch lite={!!config.i18n} />
+                    </div>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          )}
+        </div>
+      </aside>
+    </>
+  )
+}
+
+// src/icons/arrow-right.tsx 
+const ArrowRight = ({ childProps, ...props }: any) => {
+  return (
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 5l7 7-7 7"
+        {...(childProps || {})}
+      />
+    </svg>
+  )
+}
+
+// src/components/collapse.tsx 
+function Collapse({
+  children,
+  open
+}: {
+  children: React.ReactNode
+  open: boolean
+}) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+  const animationRef = useRef<NodeJS.Timeout>()
+  const initialRender = useRef(true)
+  const initialState = useRef(open)
+
+  useEffect(() => {
+    if (initialRender.current) return
+
+    if (animationRef.current) {
+      clearTimeout(animationRef.current)
+    }
+    if (open) {
+      const container = containerRef.current
+      const inner = innerRef.current
+      if (container && inner) {
+        const contentHeight = innerRef.current.clientHeight
+        container.style.maxHeight = contentHeight + 'px'
+        container.classList.remove('duration-500')
+        container.classList.add('duration-300')
+
+        inner.style.opacity = '1'
+        animationRef.current = setTimeout(() => {
+          const container = containerRef.current
+          if (container) {
+            container.style.removeProperty('max-height')
+          }
+        }, 300)
+      }
+    } else {
+      const container = containerRef.current
+      const inner = innerRef.current
+      if (container && inner) {
+        const contentHeight = innerRef.current.clientHeight
+        container.style.maxHeight = contentHeight + 'px'
+        container.classList.remove('duration-300')
+        container.classList.add('duration-500')
+
+        inner.style.opacity = '0'
+        setTimeout(() => {
+          const container = containerRef.current
+          if (container) {
+            container.style.maxHeight = '0px'
+          }
+        })
+      }
+    }
+  }, [open])
+
+  useEffect(() => {
+    initialRender.current = false
+  }, [])
+
+  return (
+    <div
+      ref={containerRef}
+      className="transition-all ease-in-out duration-300 overflow-hidden transform-gpu motion-reduce:transition-none"
+      style={{
+        maxHeight: initialState.current ? undefined : 0
+      }}
+    >
+      <div
+        ref={innerRef}
+        className="nextra-collapse-content transition-opacity ease-in-out duration-500 overflow-hidden transform-gpu motion-reduce:transition-none"
+        style={{
+          opacity: initialState.current ? 1 : 0
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// src/utils/get-heading-text.ts 
+function getHeadingText(heading: Heading) {
+  return heading.value || ''
+}
+
+// src/search.tsx
+interface ItemProps {
+  title: string
+  active: boolean
+  href: string
+  search: string
+  onMouseOver: MouseEventHandler
+}
+
+const SearchItem = ({ title, active, href, onMouseOver, search }: ItemProps) => {
+  const highlight = title.toLowerCase().indexOf(search.toLowerCase())
+  return (
+    <li className={cn('p-2', { active })}>
+      <Link href={href} passHref>
+        <a className="block no-underline" onMouseOver={onMouseOver}>
+          {title.substring(0, highlight)}
+          <span className="highlight">
+            {title.substring(highlight, highlight + search.length)}
+          </span>
+          {title.substring(highlight + search.length)}
+        </a>
+      </Link>
+    </li>
+  )
+}
+
+const UP = true
+const DOWN = false
+
+interface SearchProps {
+  directories: NormalItem[]
+}
+
+const Search = ({ directories = [] }: SearchProps) => {
+  const router = useRouter()
+  const config = useConfig()
+  const [show, setShow] = useState(false)
+  const [search, setSearch] = useState('')
+  const [active, setActive] = useState<number | null>(null)
+  const input = useRef<HTMLInputElement | null>(null)
+
+  const results = useMemo<{ route: string; title: string }[]>(() => {
+    if (!search) return []
+
+    // Will need to scrape all the headers from each page and search through them here
+    // (similar to what we already do to render the hash links in sidebar)
+    // We could also try to search the entire string text from each page
+    return matchSorter(directories, search, { keys: ['title'] })
+  }, [search])
+
+  const moveActiveItem = (up: boolean) => {
+    const position = active !== null ? active + (up ? -1 : 1) : 0
+    const { length } = results
+
+    // Modulo instead of remainder,
+    // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder
+    const next = (position + length) % length
+    setActive(next)
+  }
+
+  const handleKeyDown = useCallback(
+    e => {
+      const { key, ctrlKey } = e
+
+      if ((ctrlKey && key === 'n') || key === 'ArrowDown') {
+        e.preventDefault()
+        moveActiveItem(DOWN)
+      }
+
+      if ((ctrlKey && key === 'p') || key === 'ArrowUp') {
+        e.preventDefault()
+        moveActiveItem(UP)
+      }
+
+      if (active !== null && key === 'Enter' && results && results[active]) {
+        router.push(results[active].route)
+      }
+    },
+    [active, results, router]
+  )
+
+  const handleOnBlur = useCallback(
+    e => {
+      if (active === null) {
+        setShow(false)
+      }
+    },
+    [active]
+  )
+
+  useEffect(() => {
+    setActive(null)
+  }, [search])
+
+  useEffect(() => {
+    const inputs = ['input', 'select', 'button', 'textarea']
+
+    const down = (e: KeyboardEvent) => {
+      if (
+        document.activeElement &&
+        inputs.indexOf(document.activeElement.tagName.toLowerCase()) === -1
+      ) {
+        if (e.key === '/') {
+          e.preventDefault()
+          input.current?.focus()
+        } else if (e.key === 'Escape') {
+          setShow(false)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', down)
+    return () => window.removeEventListener('keydown', down)
+  }, [])
+
+  const renderList = show && results.length > 0
+
+  return (
+    <div className="relative w-full nextra-search md:w-64">
+      {renderList && (
+        <div className="z-10 search-overlay" onClick={() => setShow(false)} />
+      )}
+
+      <div className="relative flex items-center">
+        <input
+          onChange={e => {
+            setSearch(e.target.value)
+            setShow(true)
+          }}
+          className="block w-full px-3 py-2 leading-tight bg-black bg-opacity-[.03] rounded-lg appearance-none focus:outline-none focus:ring hover:bg-opacity-5 transition-colors"
+          type="search"
+          placeholder={renderComponent( // @WIP
+            config.searchPlaceholder,
+            {
+              locale: router.locale
+            },
+            true
+          )}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setShow(true)}
+          onBlur={handleOnBlur}
+          ref={input}
+          spellCheck={false}
+        />
+        {show ? null : (
+          <div className="hidden sm:flex absolute inset-y-0 right-0 py-1.5 pr-1.5 select-none pointer-events-none">
+            <kbd className="inline-flex items-center px-1.5 font-mono text-sm font-medium bg-white text-gray-400 dark:text-gray-800 dark:border-gray-400 border rounded">
+              /
+            </kbd>
+          </div>
+        )}
+      </div>
+      {renderList && (
+        <ul className="absolute left-0 z-20 w-full p-0 py-2.5 m-0 mt-1 list-none border divide-y rounded shadow-md md:right-0 top-100 md:w-auto">
+          {results.map((res, i) => {
+            return (
+              <SearchItem
+                key={`search-item-${i}`}
+                title={res.title}
+                href={res.route}
+                active={i === active}
+                search={search}
+                onMouseOver={() => setActive(i)}
+              />
+            )
+          })}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+// src/toc.tsx 
+const createEditUrl = (repository?: string, filepath?: string) => {
+  const repo = parseGitUrl(repository || '')
+  if (!repo) throw new Error('Invalid `docsRepositoryBase` URL!')
+
+  switch (repo.type) {
+    case 'github':
+      return `https://github.com/${repo.owner}/${repo.name}/blob/${
+        repo.branch || 'main'
+      }/${repo.subdir || 'pages'}${filepath}`
+    case 'gitlab':
+      return `https://gitlab.com/${repo.owner}/${repo.name}/-/blob/${
+        repo.branch || 'master'
+      }/${repo.subdir || 'pages'}${filepath}`
+  }
+
+  return '#'
+}
+
+const useCreateFeedbackUrl = (
+  repository?: string,
+  filepath?: string,
+  labels?: string
+) => {
+  const mounted = useMounted()
+  if (!mounted) return '#'
+
+  const repo = parseGitUrl(repository || '')
+  if (!repo) throw new Error('Invalid `docsRepositoryBase` URL!')
+
+  const pageTitle = document.title
+
+  switch (repo.type) {
+    case 'github':
+      return `https://github.com/${repo.owner}/${
+        repo.name
+      }/issues/new?title=${encodeURIComponent(
+        `Feedback for “${pageTitle}”`
+      )}&labels=${labels || ''}`
+    case 'gitlab':
+      return `https://gitlab.com/${repo.owner}/${repo.name}/-/blob/${
+        repo.branch || 'master'
+      }/${repo.subdir || 'pages'}${filepath}`
+  }
+
+  return '#'
+}
+
+const EditPageLink = ({
+  repository,
+  text,
+  filepath
+}: {
+  repository?: string
+  text: string
+  filepath: string
+}) => {
+  const url = createEditUrl(repository, filepath)
+  const { locale } = useRouter()
+  return (
+    <a
+      className="text-xs font-medium no-underline block text-gray-500 mb-2 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {text
+        ? renderComponent(text, {
+            locale
+          })
+        : 'Edit this page'}
+    </a>
+  )
+}
+
+const FeedbackLink = ({
+  repository,
+  text,
+  filepath,
+  labels
+}: {
+  repository?: string
+  text: string
+  filepath: string
+  labels?: string
+}) => {
+  const url = useCreateFeedbackUrl(repository, filepath, labels)
+  const { locale } = useRouter()
+  return (
+    <a
+      className="text-xs font-medium no-underline block text-gray-500 mb-2 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {text
+        ? renderComponent(text, {
+            locale
+          })
+        : 'Feedback'}
+    </a>
+  )
+}
+
+const indent = (level: number) => {
+  switch (level) {
+    case 3:
+      return { marginLeft: '1rem ' }
+    case 4:
+      return { marginLeft: '2rem ' }
+    case 5:
+      return { marginLeft: '3rem ' }
+    case 6:
+      return { marginLeft: '4rem ' }
+  }
+  return {}
+}
+
+const emptyHeader: any[] = []
+
+function ToCItem({
+  heading,
+  slug,
+  activeAnchor
+}: {
+  heading: Heading
+  slug: string
+  activeAnchor: ActiveAnchor
+}) {
+  const text = getHeadingText(heading)
+  const state = activeAnchor[slug]
+  const ref = React.useRef<HTMLLIElement>(null)
+
+  React.useEffect(() => {
+    const el = ref.current
+    const toc = document.getElementsByClassName('nextra-toc')[0]
+    if (state?.isActive && el && toc) {
+      scrollIntoView(el, {
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center',
+        scrollMode: 'always',
+        boundary: toc
+      })
+    }
+  }, [state?.isActive])
+
+  return (
+    <li
+      className="scroll-py-6 scroll-my-6"
+      style={indent(heading.depth)}
+      ref={ref}
+    >
+      <a
+        href={`#${slug}`}
+        className={cn(
+          'no-underline inline-block',
+          heading.depth === 2 ? 'font-semibold' : '',
+          state?.isActive
+            ? 'text-primary-500 subpixel-antialiased'
+            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+        )}
+        aria-selected={state?.isActive}
+      >
+        {text}
+      </a>
+    </li>
+  )
+}
+
+export default function ToC({
+  headings = emptyHeader,
+  filepathWithName
+}: {
+  headings: Heading[] | null
+  filepathWithName: string
+}) {
+  const slugger = new Slugger()
+  const activeAnchor = useActiveAnchor()
+  const config = useConfig()
+  const { locale } = useRouter()
+
+  headings = headings
+    ? headings.filter(
+        heading => heading.type === 'heading' && heading.depth > 1
+      )
+    : headings
+
+  const hasHeadings = headings && headings.length > 0
+  const hasMetaInfo =
+    config.feedbackLink || config.footerEditLink || config.tocExtraContent
+
+  return (
+    <div className="nextra-toc w-64 hidden xl:block text-sm px-4 order-last flex-shrink-0">
+      <div className="nextra-toc-content overflow-y-auto pr-4 -mr-4 sticky max-h-[calc(100vh-4rem-env(safe-area-inset-bottom))] top-16 pt-8">
+        {hasHeadings && headings ? (
+          <ul>
+            <p className="font-semibold tracking-tight mb-4">On This Page</p>
+            {headings.map(heading => {
+              const text = getHeadingText(heading)
+              const slug = slugger.slug(text)
+
+              return (
+                <ToCItem
+                  heading={heading}
+                  activeAnchor={activeAnchor}
+                  slug={slug}
+                  key={slug}
+                />
+              )
+            })}
+          </ul>
+        ) : null}
+
+        {hasMetaInfo ? (
+          <div
+            className={cn(
+              'nextra-toc-meta',
+              hasHeadings
+                ? 'border-t mt-8 pt-8 shadow-[0_-12px_16px_white] dark:shadow-[0_-12px_16px_#111] bg-white dark:bg-dark'
+                : '',
+              'sticky pb-8 bottom-0 dark:border-neutral-800'
+            )}
+          >
+            {config.feedbackLink ? (
+              <FeedbackLink
+                filepath={filepathWithName}
+                repository={config.docsRepositoryBase}
+                labels={config.feedbackLabels}
+                text={config.feedbackLink}
+              />
+            ) : null}
+
+            {config.footerEditLink ? (
+              <EditPageLink
+                filepath={filepathWithName}
+                repository={config.docsRepositoryBase}
+                text={config.footerEditLink}
+              />
+            ) : null}
+
+            {config.tocExtraContent ? (
+              <div className="pt-4 leading-4">
+                {renderComponent(config.tocExtraContent, { locale })}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
+// src/utils/use-mounted.ts 
+const useMounted = () => {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  return mounted
+}
+
+// src/misc/theme.tsx
+let observer: IntersectionObserver
+let setActiveAnchor: (
+  value: ActiveAnchor | ((prevState: ActiveAnchor) => ActiveAnchor)
+) => void
+const slugs = new WeakMap()
+
+if (typeof window !== 'undefined') {
+  observer =
+    observer! ||
+    new IntersectionObserver(
+      entries => {
+        const headers: [string, number, boolean, boolean][] = []
+
+        for (let i = 0; i < entries.length; i++) {
+          const entry = entries[i]
+          if (entry && entry.rootBounds && slugs.has(entry.target)) {
+            const [slug, index] = slugs.get(entry.target)
+            const aboveHalfViewport =
+              entry.boundingClientRect.y + entry.boundingClientRect.height <=
+              entry.rootBounds.y + entry.rootBounds.height
+            const insideHalfViewport = entry.intersectionRatio > 0
+
+            headers.push([slug, index, aboveHalfViewport, insideHalfViewport])
+          }
+        }
+
+        setActiveAnchor(f => {
+          const ret: ActiveAnchor = { ...f }
+
+          for (const header of headers) {
+            ret[header[0]] = {
+              index: header[1],
+              aboveHalfViewport: header[2],
+              insideHalfViewport: header[3]
+            }
+          }
+
+          let activeSlug = ''
+          let smallestIndexInViewport = Infinity
+          let largestIndexAboveViewport = -1
+          for (let s in ret) {
+            ret[s].isActive = false
+            if (
+              ret[s].insideHalfViewport &&
+              ret[s].index < smallestIndexInViewport
+            ) {
+              smallestIndexInViewport = ret[s].index
+              activeSlug = s
+            }
+            if (
+              smallestIndexInViewport === Infinity &&
+              ret[s].aboveHalfViewport &&
+              ret[s].index > largestIndexAboveViewport
+            ) {
+              largestIndexAboveViewport = ret[s].index
+              activeSlug = s
+            }
+          }
+
+          if (ret[activeSlug]) ret[activeSlug].isActive = true
+          return ret
+        })
+      },
+      {
+        rootMargin: '0px 0px -50%',
+        threshold: [0, 1]
+      }
+    )
+}
+
+// Anchor links
+const HeaderLink = ({
+  tag: Tag,
+  children,
+  id,
+  context,
+  withObserver = true,
+  ...props
+}: {
+  tag: any
+  children: any
+  id: string
+  context: { index: number }
+  withObserver?: boolean
+}) => {
+  setActiveAnchor = useActiveAnchorSet()
+  const obRef = useRef<HTMLSpanElement>(null)
+
+  const slug = id
+  const anchor = <span className="subheading-anchor" id={slug} ref={obRef} />
+
+  const index = context.index++
+
+  useEffect(() => {
+    const ref = obRef
+    if (!ref.current) return
+
+    slugs.set(ref.current, [slug, index])
+    if (ref.current) observer.observe(ref.current)
+
+    return () => {
+      observer.disconnect()
+      slugs.delete(ref.current!)
+      setActiveAnchor(f => {
+        const ret: ActiveAnchor = { ...f }
+        delete ret[slug]
+        return ret
+      })
+    }
+  }, [])
+
+  return (
+    <Tag {...props}>
+      {anchor}
+      <a
+        href={'#' + slug}
+        className="anchor text-current no-underline no-outline"
+      >
+        {children}
+        <span className="anchor-icon" aria-hidden>
+          #
+        </span>
+      </a>
+    </Tag>
+  )
+}
+
+interface HeadingProps {
+  children?: React.ReactNode
+  href?: string
+  id: string
+}
+
+const H2 =
+  (context: { index: number }) =>
+  ({ children, ...props }: HeadingProps) => {
+    return (
+      <HeaderLink tag="h2" context={context} {...props}>
+        {children}
+      </HeaderLink>
+    )
+  }
+
+const H3 =
+  (context: { index: number }) =>
+  ({ children, ...props }: HeadingProps) => {
+    return (
+      <HeaderLink tag="h3" context={context} {...props}>
+        {children}
+      </HeaderLink>
+    )
+  }
+
+const H4 =
+  (context: { index: number }) =>
+  ({ children, ...props }: HeadingProps) => {
+    return (
+      <HeaderLink tag="h4" context={context} {...props}>
+        {children}
+      </HeaderLink>
+    )
+  }
+
+const H5 =
+  (context: { index: number }) =>
+  ({ children, ...props }: HeadingProps) => {
+    return (
+      <HeaderLink tag="h5" context={context} {...props}>
+        {children}
+      </HeaderLink>
+    )
+  }
+
+const H6 =
+  (context: { index: number }) =>
+  ({ children, ...props }: HeadingProps) => {
+    return (
+      <HeaderLink tag="h6" context={context} {...props}>
+        {children}
+      </HeaderLink>
+    )
+  }
+
+const A = ({
+  children,
+  ...props
+}: {
+  children?: React.ReactNode
+  href?: string
+}) => {
+  const isExternal = props.href && props.href.startsWith('https://')
+  if (isExternal) {
+    return (
+      <a target="_blank" rel="noreferrer" {...props}>
+        {children}
+      </a>
+    )
+  }
+  return props.href ? (
+    <Link href={props.href}>
+      <a {...props}>{children}</a>
+    </Link>
+  ) : (
+    <></>
+  )
+}
+
+const Table = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <div className="table-container">
+      <table>{children}</table>
+    </div>
+  )
+}
+
+const DetailsContext = React.createContext<any>(() => {})
+
+const findSummary = (children: React.ReactNode) => {
+  let summary: React.ReactNode = null
+  let restChildren: ReactNode[] = []
+
+  React.Children.forEach(children, (child, index) => {
+    if (child && (child as React.ReactElement).type === Summary) {
+      summary = summary || child
+    } else {
+      let c = child
+      if (
+        !summary &&
+        typeof child === 'object' &&
+        child &&
+        (child as React.ReactElement).type !== Details &&
+        'props' in child &&
+        child.props
+      ) {
+        const result = findSummary(child.props.children)
+        summary = summary || result[0]
+        c = React.cloneElement(child, {
+          ...child.props,
+          children: result[1]?.length ? result[1] : undefined,
+          key: index
+        })
+      }
+      restChildren.push(c)
+    }
+  })
+
+  return [summary, restChildren]
+}
+
+const Details = ({
+  children,
+  open,
+  ...props
+}: {
+  children?: React.ReactNode
+  open?: boolean
+}) => {
+  const [openState, setOpen] = useState(!!open)
+  const ref = useRef<HTMLDetailsElement>(null)
+  const [summary, restChildren] = findSummary(children)
+
+  return (
+    <details
+      {...props}
+      ref={ref}
+      open
+      {...(openState ? { 'data-open': '' } : null)}
+    >
+      <DetailsContext.Provider value={setOpen}>
+        {summary}
+      </DetailsContext.Provider>
+      <Collapse open={openState}>{restChildren}</Collapse>
+    </details>
+  )
+}
+
+const Summary = ({ children, ...props }: { children?: React.ReactNode }) => {
+  const setOpen = useContext(DetailsContext)
+  return (
+    <summary
+      {...props}
+      onClick={e => {
+        e.preventDefault()
+        setOpen((v: boolean) => !v)
+      }}
+    >
+      {children}
+    </summary>
+  )
+}
+
+const getComponents = (context: { index: number }) => ({
+  h2: H2(context),
+  h3: H3(context),
+  h4: H4(context),
+  h5: H5(context),
+  h6: H6(context),
+  a: A,
+  table: Table,
+  details: Details,
+  summary: Summary,
+  Nextra: {
+    Bleed,
+    Callout,
+    Tabs,
+    Tab
+  }
+})
+
+const MDXTheme: React.FC<{}> = ({ children }) => {
+  return (
+    <MDXProvider components={getComponents({ index: 0 }) as any}>
+      {children}
+    </MDXProvider>
+  )
+}
+
+// src/bleed.tsx 
+interface BleedProps {
+  full: boolean
+}
+
+const Bleed: React.FC<BleedProps> = ({
+  full,
+  children,
+}) => {
+  return (
+    <div className={cn('bleed relative mt-6 -mx-6 md:-mx-8 2xl:-mx-24', { full })}>
+      {children}
+    </div>
+  )
+}
+
+// src/callout.tsx 
+const themes = {
+  default:
+    'bg-orange-50 border border-orange-100 text-orange-800 dark:text-orange-300 dark:bg-orange-400 dark:border-orange-400 dark:bg-opacity-20 dark:border-opacity-30',
+  error:
+    'bg-red-100 border border-red-200 text-red-900 dark:text-red-200 dark:bg-red-900 dark:bg-opacity-30 dark:border-opacity-30',
+  info:
+    'bg-blue-100 border border-blue-200 text-blue-900 dark:text-blue-200 dark:bg-blue-900 dark:bg-opacity-30 dark:border-opacity-30',
+  warning:
+    'bg-yellow-50 border border-yellow-100 text-yellow-900 dark:text-yellow-200 dark:bg-yellow-700 dark:bg-opacity-30'
+}
+
+interface CalloutProps {
+  /** Callout Theme default to 'default'  */
+  type?: keyof typeof themes
+  /** default emoji 💡*/
+  emoji: string
+}
+
+const Callout: React.FC<CalloutProps> = ({
+  children,
+  type = 'default',
+  emoji = '💡'
+}) => {
+  return (
+    <div className={`${themes[type]} flex rounded-lg nextra-callout mt-6`}>
+      <div
+        className="pl-3 pr-2 py-2 select-none text-xl"
+        style={{
+          fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
+        }}
+      >
+        {emoji}
+      </div>
+      <div className="pr-4 py-2">{children}</div>
+    </div>
+  )
+}
+
+// src/breadcrumb.tsx 
+function Breadcrumb({ activePath }: { activePath: NormalItem[] }) {
+  return (
+    <div className="nextra-breadcrumb text-sm font-normal flex mt-2.5 text-gray-500 transition-colors cursor-default overflow-hidden">
+      {activePath.map((item, index) => {
+        const isLink = !item.children || item.withIndexPage
+        const isActive = index === activePath.length - 1
+
+        return (
+          <React.Fragment key={item.route}>
+            {index ? (
+              <ArrowRight width={14} className="mx-1 select-none" />
+            ) : null}
+            <div
+              key={item.route}
+              className={cn(
+                'transition-colors hover:text-gray-900 dark:hover:text-gray-200',
+                {
+                  'text-gray-600 dark:text-gray-400 active': isActive,
+                  'text-ellipsis whitespace-nowrap overflow-hidden min-w-[24px]':
+                    !isActive
+                }
+              )}
+            >
+              {isLink && !isActive ? (
+                <Link href={item.route}>
+                  <a className="text-current no-underline">{item.title}</a>
+                </Link>
+              ) : (
+                item.title
+              )}
+            </div>
+          </React.Fragment>
+        )
+      })}
+    </div>
+  )
+}
+
+// src/footer.tsx 
+interface LinkProps {
+  route: string
+  title: string
+  isRTL?: boolean | null
+}
+
+const NextLink = ({ route, title, isRTL }: LinkProps) => {
+  return (
+    <Link href={route}>
+      <a
+        className={cn(
+          'text-base md:text-lg font-medium p-4 -m-4 no-underline transition-colors text-gray-600 dark:text-gray-300 dark:hover:text-primary-500 hover:text-primary-500 inline-flex items-center justify-end rounded',
+          { 'ml-2': !isRTL, 'mr-2': isRTL }
+        )}
+        title={title}
+      >
+        {title}
+        <ArrowRight
+          height={20}
+          className={cn('transform inline flex-shrink-0', {
+            'rotate-180 mr-1': isRTL,
+            'ml-1': !isRTL
+          })}
+        />
+      </a>
+    </Link>
+  )
+}
+
+const PrevLink = ({ route, title, isRTL }: LinkProps) => {
+  return (
+    <Link href={route}>
+      <a
+        className={cn(
+          'text-base md:text-lg font-medium p-4 -m-4 no-underline transition-colors text-gray-600 dark:text-gray-300 dark:hover:text-primary-500 hover:text-primary-500 flex items-center rounded',
+          { 'mr-2': !isRTL, 'ml-2': isRTL }
+        )}
+        title={title}
+      >
+        <ArrowRight
+          height={20}
+          className={cn('transform inline flex-shrink-0', {
+            'rotate-180 mr-1': !isRTL,
+            'ml-1': isRTL
+          })}
+        />
+        {title}
+      </a>
+    </Link>
+  )
+}
+
+interface NavLinkProps {
+  isRTL?: boolean | null
+  currentIndex: number
+  flatDirectories: NormalItem[]
+}
+export const NavLinks = ({
+  flatDirectories,
+  currentIndex,
+  isRTL
+}: NavLinkProps) => {
+  const config = useConfig()
+  const prev = config.prevLinks ? flatDirectories[currentIndex - 1] : null
+  const next = config.nextLinks ? flatDirectories[currentIndex + 1] : null
+
+  if (!prev && !next) return null
+
+  return (
+    <div className="nextra-navigation-links pt-8 mb-8 border-t dark:border-neutral-800 flex flex-row items-center justify-between">
+      <div className="flex-1 min-w-0 flex justify-start">
+        {prev ? (
+          <PrevLink route={prev.route} title={prev.title} isRTL={isRTL} />
+        ) : null}
+      </div>
+      <div className="flex-1 min-w-0 flex justify-end">
+        {next ? (
+          <NextLink route={next.route} title={next.title} isRTL={isRTL} />
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
+const Footer: React.FC<{ menu?: boolean }> = ({ menu }) => {
+  const { locale } = useRouter()
+  const config = useConfig()
+
+  return (
+    <footer className="bg-gray-100 dark:bg-neutral-900 pb-[env(safe-area-inset-bottom)]">
+      <div
+        className={cn(
+          'py-2 border-b dark:border-neutral-800 hidden md:block',
+          menu ? '' : 'md:hidden'
+        )}
+      >
+        <div className="max-w-[90rem] mx-auto">
+          <div className="inline-flex px-4">
+            {config.i18n ? (
+              <div className="flex-1 relative">
+                <LocaleSwitch options={config.i18n} />
+              </div>
+            ) : null}
+            {config.darkMode ? (
+              <div className="grow-0 relative">
+                <ThemeSwitch lite={false} />
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+      <div className="max-w-[90rem] mx-auto pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)] py-12">
+        <div className="flex justify-between flex-col-reverse md:flex-row items-center md:items-end">
+          <span className="text-gray-600 dark:text-gray-400">
+            {renderComponent(config.footerText, { locale })}
+          </span>
+          <div className="mt-6" />
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+// src/locale-switch.tsx
+interface LocaleSwitchProps {
+  options: NonNullable<DocsThemeConfig['i18n']>
+}
+function LocaleSwitch({ options }: LocaleSwitchProps) {
+  const router = useRouter()
+
+  const { locale, asPath } = router
+  const selected = options.find(l => locale === l.locale)!
+
+  return (
+    <Menu
+      onChange={option => {
+        const date = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+        document.cookie = `NEXT_LOCALE=${
+          option.key
+        }; expires=${date.toUTCString()}; path=/`
+        window.location.href = asPath
+      }}
+      selected={{
+        key: selected.locale,
+        name: (
+          <div className="flex items-center gap-2">
+            <Globe />
+            <span>{selected.text}</span>
+          </div>
+        )
+      }}
+      options={options.map(l => ({
+        key: l.locale,
+        name: l.text
+      }))}
+    ></Menu>
+  )
+}
+
+// src/theme-switch.tsx 
+function ThemeSwitchComp({ lite = true }) {
+  const { theme, setTheme, systemTheme } = useTheme()
+  const renderedTheme = theme === 'system' ? systemTheme : theme
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => setMounted(true), [])
+
+  return (
+    <Menu
+      onChange={option => {
+        setTheme(option.key)
+      }}
+      selected={{
+        key: theme || '',
+        name: (
+          <div className="flex items-center gap-2 capitalize">
+            {mounted && renderedTheme === 'dark' ? <Moon /> : <Sun />}
+            {lite ? '' : <span>{mounted ? theme : 'light'}</span>}
+          </div>
+        )
+      }}
+      options={[
+        {
+          key: 'light',
+          name: 'Light'
+        },
+        {
+          key: 'dark',
+          name: 'Dark'
+        },
+        {
+          key: 'system',
+          name: 'System'
+        }
+      ]}
+    ></Menu>
+  )
+}
+
+const ThemeSwitch = memo(ThemeSwitchComp)
+
+// src/select.tsx 
+interface MenuOption {
+  key: string
+  name: React.ReactElement | string
+}
+
+interface MenuProps {
+  selected: MenuOption
+  onChange: (option: MenuOption) => void
+  options: MenuOption[]
+}
+
+function Menu({ options, selected, onChange }: MenuProps) {
+  return (
+    <Listbox value={selected} onChange={onChange}>
+      {({ open }) => (
+        <>
+          <Listbox.Button
+            className={cn(
+              'rounded-md px-2 w-full text-left font-medium cursor-default text-xs h-7 transition-colors text-gray-600 dark:text-gray-400 focus:outline-none',
+              open
+                ? 'bg-gray-200 dark:bg-primary-100 dark:bg-opacity-10 text-gray-900 dark:text-gray-50'
+                : 'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-primary-100 dark:hover:bg-opacity-5 dark:hover:text-gray-50'
+            )}
+          >
+            {selected.name}
+          </Listbox.Button>
+          <Transition
+            show={open}
+            as={React.Fragment}
+            leave="transition"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Listbox.Options
+              className={
+                'menu absolute bottom-[130%] min-w-full z-20 mt-1 bg-white dark:bg-neutral-800 dark:ring-white dark:ring-opacity-20 shadow-lg max-h-64 rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none text-sm'
+              }
+            >
+              {options.map(option => (
+                <Listbox.Option
+                  key={option.key}
+                  value={option}
+                  className={({ active }) =>
+                    cn(
+                      option.key === selected.key ? '' : '',
+                      active
+                        ? 'text-primary-500 bg-primary-50 dark:bg-primary-500 dark:bg-opacity-10'
+                        : 'text-gray-800 dark:text-gray-100',
+                      'cursor-default select-none relative py-1.5 pl-3 pr-9 whitespace-nowrap'
+                    )
+                  }
+                >
+                  {option.name}
+                  {option.key === selected.key ? (
+                    <span
+                      className={cn(
+                        'absolute inset-y-0 right-0 flex items-center pr-3'
+                      )}
+                    >
+                      <Check />
+                    </span>
+                  ) : null}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Transition>
+        </>
+      )}
+    </Listbox>
+  )
+}
+
+// src/icons/globe.tsx 
+function Globe() {
+  return (
+    <svg viewBox="0 0 20 20" width="1em" height="1em" fill="currentColor">
+      <path
+        fillRule="evenodd"
+        d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.56-.5-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.56.5.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.498-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z"
+        clipRule="evenodd"
+      />
+    </svg>
+  )
+}
+
+// src/icons/sun.tsx 
+function Moon() {
+  return (
+    <svg viewBox="0 0 20 20" width="1em" height="1em" fill="currentColor">
+      <path
+        fillRule="evenodd"
+        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+        clipRule="evenodd"
+      />
+    </svg>
+  )
+}
+
+// src/icons/moon.tsx 
+function Sun() {
+  return (
+    <svg viewBox="0 0 20 20" width="1em" height="1em" fill="currentColor">
+      <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+    </svg>
+  )
+}
+
+// src/icons/check.tsx 
+function Check() {
+  return (
+    <svg viewBox="0 0 20 20" width="1em" height="1em" fill="currentColor">
+      <path
+        fillRule="evenodd"
+        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+        clipRule="evenodd"
+      />
+    </svg>
+  )
+}
+
+
+const isProduction = process.env.NODE_ENV === 'production'
+
+function useDirectoryInfo(pageMap: PageMapItem[]) {
+  const { locale, defaultLocale, asPath } = useRouter()
+
+  return useMemo(() => {
+    const fsPath = getFSRoute(asPath, locale)
+    return normalizePages({
+      list: pageMap,
+      locale,
+      defaultLocale,
+      route: fsPath
+    })
+  }, [pageMap, locale, defaultLocale, asPath])
+}
+
+interface BodyProps {
+  themeContext: PageTheme
+  breadcrumb?: React.ReactNode
+  toc?: React.ReactNode
+  timestamp?: number
+  navLinks: React.ReactNode
+}
+
+const Body: React.FC<BodyProps> = ({
+  themeContext,
+  breadcrumb,
+  navLinks,
+  timestamp,
+  children
+}) => {
+  const config = useConfig()
+  const { locale } = useRouter()
+  const date = timestamp ? new Date(timestamp) : null
+
+  return (
+    <React.Fragment>
+      <SkipNavContent />
+      {themeContext.layout === 'full' ? (
+        <article className="nextra-body full relative justify-center overflow-x-hidden pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)]">
+          <MDXTheme>{children}</MDXTheme>
+          {date && config.gitTimestamp ? (
+            <div className="text-xs text-right block text-gray-500 mt-12 mb-8 dark:text-gray-400 pointer-default">
+              {typeof config.gitTimestamp === 'string'
+                ? config.gitTimestamp +
+                  ' ' +
+                  date.toLocaleDateString(locale, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })
+                : renderComponent(config.gitTimestamp, {
+                    timestamp: date,
+                    locale
+                  })}
+            </div>
+          ) : (
+            <div className="mt-16" />
+          )}
+          {navLinks}
+        </article>
+      ) : themeContext.layout === 'raw' ? (
+        <div className="nextra-body full relative overflow-x-hidden expand">
+          {children}
+        </div>
+      ) : (
+        <article
+          className={cn(
+            'nextra-body relative pb-8 w-full justify-center max-w-full flex min-w-0 pr-[calc(env(safe-area-inset-right)-1.5rem)]',
+            themeContext.typesetting
+              ? 'nextra-body-typesetting-' + themeContext.typesetting
+              : ''
+          )}
+        >
+          <main className="max-w-4xl px-6 md:px-8 pt-4 z-10 min-w-0 w-full">
+            {breadcrumb}
+            <MDXTheme>{children}</MDXTheme>
+            {date && config.gitTimestamp ? (
+              <div className="text-xs text-right block text-gray-500 mt-12 mb-8 dark:text-gray-400 pointer-default">
+                {typeof config.gitTimestamp === 'string'
+                  ? config.gitTimestamp +
+                    ' ' +
+                    date.toLocaleDateString(locale, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
+                  : renderComponent(config.gitTimestamp, {
+                      timestamp: date,
+                      locale
+                    })}
+              </div>
+            ) : (
+              <div className="mt-16" />
+            )}
+            {navLinks}
+          </main>
+        </article>
+      )}
+    </React.Fragment>
+  )
+}
+
+
+interface LayoutProps {
+  filename: string
+  pageMap: PageMapItem[]
+  meta: Record<string, any>
+  titleText: string | null
+  headings?: Heading[]
+  timestamp?: number
+}
+
+const Content: React.FC<LayoutProps> = ({
+  filename,
+  pageMap,
+  meta,
+  titleText,
+  headings,
+  timestamp,
+  children
+}) => {
+  const { route, locale } = useRouter()
+  const config = useConfig()
+
+  const {
+    activeType,
+    activeIndex,
+    activeThemeContext,
+    activePath,
+    // pageDirectories,
+    topLevelPageItems,
+    docsDirectories,
+    flatDirectories,
+    flatDocsDirectories,
+    directories
+  } = useDirectoryInfo(pageMap)
+
+  const filepath = route.slice(0, route.lastIndexOf('/') + 1)
+  const filepathWithName = filepath + filename
+  const title = meta.title || titleText || 'Untitled'
+  const isRTL = useMemo(() => {
+    if (!config.i18n) return config.direction === 'rtl'
+    const localeConfig = config.i18n.find(l => l.locale === locale)
+    return localeConfig && localeConfig.direction === 'rtl'
+  }, [config.i18n, locale])
+
+  const [menu, setMenu] = useState(false)
+  const themeContext = { ...activeThemeContext, ...meta }
+
+  const hideSidebar = !themeContext.sidebar || themeContext.layout === 'raw'
+  const hideToc = !themeContext.toc || themeContext.layout === 'raw'
+
+  const headingArr = headings ?? []
+  return (
+    <React.Fragment>
+      <Head title={title} locale={locale} meta={meta} />
+      <MenuContext.Provider
+        value={{
+          menu,
+          setMenu,
+          defaultMenuCollapsed: !!config.defaultMenuCollapsed
+        }}
+      >
+        <div
+          className={cn('nextra-container main-container flex flex-col', {
+            rtl: isRTL,
+            'menu-active': menu
+          })}
+        >
+          {themeContext.navbar ? (
+            <Navbar
+              isRTL={isRTL}
+              flatDirectories={flatDirectories}
+              items={topLevelPageItems}
+            />
+          ) : null}
+          <ActiveAnchor>
+            <div className="max-w-[90rem] w-full mx-auto flex flex-1 items-stretch">
+              <div className="flex flex-1 w-full">
+                <Sidebar
+                  directories={docsDirectories}
+                  flatDirectories={flatDirectories}
+                  fullDirectories={directories}
+                  headings={headings}
+                  isRTL={isRTL}
+                  asPopover={activeType === 'page' || hideSidebar}
+                  includePlaceholder={themeContext.layout === 'default'}
+                />
+                {activeType === 'page' ||
+                hideToc ||
+                themeContext.layout !== 'default' ? (
+                  themeContext.layout === 'full' ? null : (
+                    <div className="nextra-toc w-64 hidden xl:block text-sm px-4 order-last flex-shrink-0" />
+                  )
+                ) : (
+                  <ToC
+                    headings={config.floatTOC ? headingArr : null}
+                    filepathWithName={filepathWithName}
+                  />
+                )}
+                <Body
+                  themeContext={themeContext}
+                  breadcrumb={
+                    activeType === 'page' ? null : themeContext.breadcrumb ? (
+                      <Breadcrumb activePath={activePath} />
+                    ) : null
+                  }
+                  navLinks={
+                    activeType === 'page' ? null : themeContext.pagination ? (
+                      <NavLinks
+                        flatDirectories={flatDocsDirectories}
+                        currentIndex={activeIndex}
+                        isRTL={isRTL}
+                      />
+                    ) : null
+                  }
+                  timestamp={timestamp}
+                >
+                  {children}
+                </Body>
+              </div>
+            </div>
+          </ActiveAnchor>
+          {themeContext.footer && config.footer ? (
+            <Footer menu={activeType === 'page' || hideSidebar} />
+          ) : null}
+        </div>
+      </MenuContext.Provider>
+    </React.Fragment>
+  )
+}
+
+
+const __nextra_withLayout_debug__ = (opts: PageOpt, _config: DocsThemeConfig) => {
+  const extendedConfig = Object.assign({}, defaultConfig, _config)
+  let layoutUsed = false
+  const Page = ({ children }: { children: React.ReactChildren }) => {
+    if (!layoutUsed && isProduction) {
+      throw new Error(
+        '[Nextra] Please add the `getLayout` logic to your _app.js, see https://nextjs.org/docs/basic-features/layouts#per-page-layouts.'
+      )
+    }
+    return children
+  }
+  Page.getLayout = (page: any) => {
+    layoutUsed = true
+    return (
+      <ThemeConfigContext.Provider value={extendedConfig}>
+        <ThemeProvider
+          attribute="class"
+          disableTransitionOnChange={true}
+          {...{
+            defaultTheme: extendedConfig.nextThemes.defaultTheme,
+            storageKey: extendedConfig.nextThemes.storageKey,
+            forcedTheme: extendedConfig.nextThemes.forcedTheme
+          }}
+        >
+          <Content {...opts}>{page}</Content>
+        </ThemeProvider>
+      </ThemeConfigContext.Provider>
+    )
+  }
+  return Page
+}
+
+const NextraLayout = __nextra_withSSG__(__nextra_withLayout_debug__({
+  filename: "${slash(filename)}",
+  route: "${slash(route)}",
+}, __nextra_layoutConfig__ ))
+
+
+const NextraPagePreviewTemplate = ({ entry }) => {
+ 
+  return (
+    <NextraLayout>
+      <MDX
+        scope={
+          {
+            Author,
+            Authors
+          }
+        }
+        onError={(error) => console.log(error)}
+      >
+        {entry.getIn(['data', 'body'])}
+      </MDX>
+    </NextraLayout>
+  )
+}
+
+NextraPagePreviewTemplate.getLayout = NextraLayout.getLayout
+
+NextraPagePreviewTemplate.propTypes = {
+  entry: PropTypes.object.isRequired,
+}
+
+export { MdxControl, MdxPreview, NextraPagePreviewTemplate }

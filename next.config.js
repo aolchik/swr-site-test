@@ -1,3 +1,4 @@
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const withNextra = require("nextra")({
   theme: "nextra-theme-docs",
@@ -6,7 +7,44 @@ const withNextra = require("nextra")({
   unstable_staticImage: true,
 })
 
-module.exports = withNextra({
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { createVanillaExtractPlugin } = require('@vanilla-extract/next-plugin')
+const withVanillaExtract = createVanillaExtractPlugin()
+  // from https://github.com/seek-oss/vanilla-extract
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+//const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+
+// @FIXME: css-loader pode estar colidindo com o outro loader. style-loader? abrir rules para ver
+module.exports = withVanillaExtract(withNextra({
+  webpack: (
+    // for more info see https://nextjs.org/docs/api-reference/next.config.js/custom-webpack-config
+    config
+  ) => {
+    // config.module.rules.push({
+    //   test: /\.css$/i,
+    //   use: [
+    //     "css-loader",
+    //     "postcss-loader",
+    //   ],
+    // })
+    // config.plugins.push(new VanillaExtractPlugin())
+    // config.plugins.push(new MiniCssExtractPlugin())
+    // config.module.rules.push({
+    //   test: /\.vanilla\.css$/i,
+    //   use: [
+    //     MiniCssExtractPlugin.loader, 
+    //     {
+    //       loader: require.resolve('css-loader'),
+    //       options: {
+    //         url: false
+    //       },
+    //     }
+    //   ],
+    // })
+    console.dir(config, { depth: null })
+    return config
+  },
   i18n: {
     locales: [ "en-US", "pt-BR" ],
     defaultLocale: "pt-BR",
@@ -55,5 +93,5 @@ module.exports = withNextra({
       },
     ]
   },
-})
+}))
 

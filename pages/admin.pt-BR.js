@@ -6,12 +6,15 @@ import React from 'react'
 
 const CMS = dynamic(() => { 
     window.CMS_MANUAL_INIT = true;
-    return import('netlify-cms').then((cms) => { 
+
+    return import('netlify-cms-app').then((cms) => { 
       cms.init({ config });
 
       import('@emotion/react').then(() => {
-        import('netlify-cms-widget-mdx').then((widget) => {
-          cms.registerWidget('mdx', widget.MdxControl, widget.MdxPreview)
+        import('../modules/netlify-cms/components/widgets').then((widget) => {
+          cms.registerPreviewStyle('/styles-preview.css')
+          cms.registerWidget('mdx', widget.MdxControl)
+          cms.registerPreviewTemplate('blog', widget.NextraPagePreviewTemplate)
         })
       })
     }) 
