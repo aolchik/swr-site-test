@@ -1,9 +1,9 @@
 
 
 # WIP
-feat: add netlify-cms
+feat: add netlify-cms (branch netlify-cms)
 
-feat(netlify-cms): support full editing 
+feat(netlify-cms): support full editing (branch full-editing)
   feat(netlify-cms): support custom previews to improve visualization
     reference:
       https://zslabs.com/articles/mdx-previews-in-netlify-cms
