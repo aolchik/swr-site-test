@@ -2,6 +2,8 @@
 
 This repo is based on the official website for [SWR](https://github.com/vercel/swr).
 
+This project was forked from [SWR Site](https://github.com/vercel/swr-site).
+
 The ideia behind this test is to use the stylish nextra-doc-theme and the possibility to add content using mdx files with the added feature of a headless CMS content management like netlify-cms.
 
 The project uses [pnpm](https://pnpm.io), [Nextra](https://nextra.vercel.app) and deploys via [Netlify](https://netlify.com). To develop it locally, clone this repository and run the following command to start the local dev server:
