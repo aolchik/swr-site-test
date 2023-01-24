@@ -26,6 +26,12 @@ To reindex, run
 pnpm build
 ```
 
+## FAQ
+
+### How Netlify CMS authentication works?
+
+Read netlify docs - [Authenticate with Identity](https://docs.netlify.com/visitor-access/identity/).
+
 ## Contributing
 
 Pending...
