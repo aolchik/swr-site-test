@@ -1,6 +1,18 @@
 
 
 # WIP
+issue: netlify-cms was discontinued
+  options static-cms - https://github.com/StaticJsCMS/static-cms
+
+fix: solve warnings
+  Browserslist: caniuse-lite is outdated. Please run:
+    npx browserslist@latest --update-db
+    Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+  The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/basic-features/eslint#migrating-existing-config
+
+
+chore: update packages
+
 feat: add netlify-cms (branch netlify-cms)
 
 feat(netlify-cms): support full editing (branch full-editing)
