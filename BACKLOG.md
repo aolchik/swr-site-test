@@ -2,7 +2,20 @@
 
 # WIP
 issue: netlify-cms was discontinued
-  options static-cms - https://github.com/StaticJsCMS/static-cms
+  options 
+    static-cms
+      https://staticjscms.netlify.app/
+      https://github.com/StaticJsCMS/static-cms
+    craftercms
+      https://craftercms.org/
+      https://craftercms.org/blog/2022/06/cms-for-spas-building-nextjs-apps-with-craftercms-4
+    contentrain
+      https://contentrain.io/ 
+    tina
+      https://tina.io/
+    cloudcannon
+      https://cloudcannon.com/
+
 
 fix: solve warnings
   Browserslist: caniuse-lite is outdated. Please run:
